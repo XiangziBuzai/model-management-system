@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.model.management.mapper.ModelMapper">
+
+    <resultMap id="ModelVOMap" type="com.model.management.vo.ModelVO">
+        <id     column="id"                property="id"/>
+        <result column="manufacturer_id"   property="manufacturerId"/>
+        <result column="manufacturer_name" property="manufacturerName"/>
+        <result column="name"              property="name"/>
+        <result column="price"             property="price"/>
+        <result column="remark"            property="remark"/>
+        <result column="sold"              property="sold"/>
+        <result column="created_at"        property="createdAt"/>
+        <result column="updated_at"        property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="ManufacturerStatMap" type="com.model.management.vo.ManufacturerStatVO">
+        <result column="manufacturer_id"   property="manufacturerId"/>
+        <result column="manufacturer_name" property="manufacturerName"/>
+        <result column="model_count"       property="modelCount"/>
+        <result column="total_price"       property="totalPrice"/>
+    </resultMap>
+
+    <!-- 分页+筛选查询（JOIN 厂家表获取厂家名） -->
+    <select id="selectModelVOPage" resultMap="ModelVOMap">
+        SELECT
+            m.id,
+            m.manufacturer_id,
+            mf.name AS manufacturer_name,
+            m.name,
+            m.price,
+            m.remark,
+            m.sold,
+            m.created_at,
+            m.updated_at
+        FROM model m
+        LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        WHERE m.deleted = 0
+        <if test="dto.userId != null">
+            AND m.user_id = #{dto.userId}
+        </if>
+        <if test="dto.manufacturerName != null and dto.manufacturerName != ''">
+            AND mf.name LIKE CONCAT('%', #{dto.manufacturerName}, '%')
+        </if>
+        <if test="dto.modelName != null and dto.modelName != ''">
+            AND m.name LIKE CONCAT('%', #{dto.modelName}, '%')
+        </if>
+        <if test="dto.minPrice != null">
+            AND m.price &gt;= #{dto.minPrice}
+        </if>
+        <if test="dto.maxPrice != null">
+            AND m.price &lt;= #{dto.maxPrice}
+        </if>
+        <if test="dto.sold != null">
+            AND m.sold = #{dto.sold}
+        </if>
+        ORDER BY m.created_at DESC
+    </select>
+
+    <!-- 各厂家统计（数量+总价） -->
+    <select id="selectStatsByManufacturer" resultMap="ManufacturerStatMap">
+        SELECT
+            m.manufacturer_id,
+            mf.name AS manufacturer_name,
+            COUNT(m.id)      AS model_count,
+            SUM(m.price)     AS total_price
+        FROM model m
+        LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        WHERE m.deleted = 0
+        <if test="userId != null">
+            AND m.user_id = #{userId}
+        </if>
+        GROUP BY m.manufacturer_id, mf.name
+        ORDER BY model_count DESC
+    </select>
+
+</mapper>

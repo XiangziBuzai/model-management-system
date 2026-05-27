@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.model.management.mapper.ToolMapper">
+
+    <!-- 分页+筛选查询工具 -->
+    <select id="selectToolPage" resultType="com.model.management.entity.Tool">
+        SELECT id, name, price, remark, sold, created_at, updated_at, user_id
+        FROM tool
+        WHERE deleted = 0
+        <if test="dto.userId != null">
+            AND user_id = #{dto.userId}
+        </if>
+        <if test="dto.name != null and dto.name != ''">
+            AND name LIKE CONCAT('%', #{dto.name}, '%')
+        </if>
+        <if test="dto.minPrice != null">
+            AND price &gt;= #{dto.minPrice}
+        </if>
+        <if test="dto.maxPrice != null">
+            AND price &lt;= #{dto.maxPrice}
+        </if>
+        <if test="dto.sold != null">
+            AND sold = #{dto.sold}
+        </if>
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

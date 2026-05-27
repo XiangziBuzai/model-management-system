@@ -1,0 +1,53 @@
+import request from './request'
+
+// 分页查询模型列表
+export function getModelList(params) {
+  return request({
+    url: '/models',
+    method: 'get',
+    params
+  })
+}
+
+// 获取单个模型详情
+export function getModelById(id) {
+  return request({
+    url: `/models/${id}`,
+    method: 'get'
+  })
+}
+
+// 新增模型
+export function addModel(data) {
+  return request({
+    url: '/models',
+    method: 'post',
+    data
+  })
+}
+
+// 更新模型
+export function updateModel(id, data) {
+  return request({
+    url: `/models/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 删除模型
+export function deleteModel(id) {
+  return request({
+    url: `/models/${id}`,
+    method: 'delete'
+  })
+}
+
+// 批量删除模型
+export function batchDeleteModels(ids) {
+  return request({
+    url: '/models/batch',
+    method: 'delete',
+    data: ids
+  })
+}
