@@ -1,0 +1,104 @@
+# Railway 后端环境变量配置指南
+
+##  配置步骤
+
+### 1. 打开 Railway 空服务的 Variables 标签
+
+1. 在 Railway 项目页面，点击你的空服务
+2. 点击顶部的 **"Variables"** 标签
+3. 点击 **"New Variable"** 按钮
+
+### 2. 添加以下环境变量
+
+#### 数据库配置
+
+**变量名**: `SPRING_DATASOURCE_URL`
+**变量值**: 
+```
+jdbc:mysql://metro.proxy.rlwy.net:35829/railway?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+```
+
+**变量名**: `SPRING_DATASOURCE_USERNAME`
+**变量值**: 
+```
+root
+```
+
+**变量名**: `SPRING_DATASOURCE_PASSWORD`
+**变量值**: 
+```
+[从你的 MySQL 连接弹窗中点击 "show" 显示的完整密码]
+```
+
+#### JWT 配置
+
+**变量名**: `JWT_SECRET`
+**变量值**: 
+```
+mySecretKeyForJWTTokenGenerationAndValidation123456789
+```
+
+#### 文件上传配置
+
+**变量名**: `FILE_UPLOAD_PATH`
+**变量值**: 
+```
+/app/uploads/avatars
+```
+
+**变量名**: `FILE_ACCESS_URL`
+**变量值**: 
+```
+https://你的后端域名.railway.app/uploads
+```
+⚠️ **注意**: `FILE_ACCESS_URL` 暂时可以先不填，等后端部署成功后获取域名再更新
+
+### 3. 保存所有变量
+
+添加完所有变量后，确保点击保存。
+
+---
+
+##  下一步：配置构建和启动命令
+
+添加完环境变量后，请继续：
+
+1. 点击空服务的 **"Settings"** 标签
+2. 找到以下设置项并配置：
+
+### Root Directory（根目录）
+```
+backend
+```
+
+### Build Command（构建命令）
+```
+mvn clean package -DskipTests
+```
+
+### Start Command（启动命令）
+```
+java -jar target/management-1.0.0.jar
+```
+
+---
+
+## ⚠️ 重要提示
+
+1. **密码安全**: 不要将密码分享到任何地方
+2. **变量名大小写**: 确保变量名完全一致（区分大小写）
+3. **URL 编码**: JDBC URL 中的特殊字符不需要额外编码
+4. **Java 版本**: Railway 会自动检测并使用 Java 17（根据你的 pom.xml 配置）
+
+---
+
+##  配置完成后
+
+1. Railway 会自动开始构建你的后端应用
+2. 构建过程大约需要 3-5 分钟（首次需要下载 Maven 依赖）
+3. 你可以在 "Deployments" 标签中查看构建日志
+4. 部署成功后，点击 "Generate Domain" 生成公网访问地址
+
+---
+
+配置完成后告诉我，我会继续指导你下一步！

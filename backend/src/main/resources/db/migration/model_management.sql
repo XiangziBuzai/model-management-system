@@ -1,0 +1,240 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : localhost_3306
+ Source Server Type    : MySQL
+ Source Server Version : 80046
+ Source Host           : localhost:3306
+ Source Schema         : model_management
+
+ Target Server Type    : MySQL
+ Target Server Version : 80046
+ File Encoding         : 65001
+
+ Date: 27/05/2026 14:53:40
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for manufacturer
+-- ----------------------------
+DROP TABLE IF EXISTS `manufacturer`;
+CREATE TABLE `manufacturer`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '厂家名称',
+  `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '描述',
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted` tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除(0正常/1删除)',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_name`(`name` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 30 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '厂家表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of manufacturer
+-- ----------------------------
+INSERT INTO `manufacturer` VALUES (1, '和模线', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (2, '高晟文化', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (3, '费米盒子', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (4, '无限新星', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (5, 'moshou', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (6, '爱因塔', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (7, '铭匠传', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (8, '将魂姬', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (9, '千秋赏', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (10, '萝播动漫', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (11, '长龙', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (12, '大班', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (13, '万象聚变', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (14, 'VT V-TIGER', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (15, '熊猫', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (16, '闪萌', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (17, '壹理创玩', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (18, '塑灵模玩', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (19, '五金', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (20, '摩动核', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (21, '橘猫工业', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (22, '野想积木', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (23, '奇妙积木', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (24, '神型科技', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+INSERT INTO `manufacturer` VALUES (25, 'ETM', NULL, '2026-05-26 18:51:12', '2026-05-26 18:51:12', 0);
+
+-- ----------------------------
+-- Table structure for model
+-- ----------------------------
+DROP TABLE IF EXISTS `model`;
+CREATE TABLE `model`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `manufacturer_id` bigint NOT NULL COMMENT '厂家ID',
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '模型名称',
+  `price` decimal(10, 2) NOT NULL COMMENT '价格',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` tinyint(1) NULL DEFAULT 0,
+  `sold` tinyint(1) NULL DEFAULT 0 COMMENT '是否售出',
+  `user_id` bigint NULL DEFAULT NULL COMMENT '用户ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_manufacturer_name`(`manufacturer_id` ASC, `name` ASC) USING BTREE,
+  INDEX `idx_price`(`price` ASC) USING BTREE,
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 107 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '模型表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of model
+-- ----------------------------
+INSERT INTO `model` VALUES (26, 20, '摩动核 白起', 167.45, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:00', 0, 0, 1);
+INSERT INTO `model` VALUES (27, 20, '摩动核 曹仁', 170.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:00', 0, 0, 1);
+INSERT INTO `model` VALUES (28, 20, '摩动核 哪吒', 176.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:00', 0, 0, 1);
+INSERT INTO `model` VALUES (29, 20, '摩动核 敖丙', 190.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:00', 0, 0, 1);
+INSERT INTO `model` VALUES (30, 20, '摩动核 q干将+神谕', 130.80, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:04', 0, 0, 1);
+INSERT INTO `model` VALUES (31, 20, '摩动核 威远式剑斗型', 79.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:03', 0, 0, 1);
+INSERT INTO `model` VALUES (32, 20, '摩动核 威远式重火力', 117.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:02', 0, 0, 1);
+INSERT INTO `model` VALUES (33, 20, '摩动核 我是大英雄端盒', 252.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:05', 0, 0, 1);
+INSERT INTO `model` VALUES (34, 20, '摩动核 干将拼装版', 186.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:05', 0, 0, 1);
+INSERT INTO `model` VALUES (35, 20, '摩动核 赵云', 429.00, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:05', 0, 0, 1);
+INSERT INTO `model` VALUES (36, 17, '壹理创玩 菠萝吹雪', 91.50, NULL, '2026-05-27 10:19:46', '2026-05-27 13:40:06', 0, 0, 1);
+INSERT INTO `model` VALUES (37, 17, '壹理创玩 菠萝吹雪炫色版', 168.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:06', 0, 0, 1);
+INSERT INTO `model` VALUES (38, 17, '壹理创玩 陆小果', 91.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:06', 0, 0, 1);
+INSERT INTO `model` VALUES (39, 17, '壹理创玩 陆小果炫色版', 168.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:06', 0, 0, 1);
+INSERT INTO `model` VALUES (40, 17, '壹理创玩 草莓战宝', 79.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:07', 0, 0, 1);
+INSERT INTO `model` VALUES (41, 17, '壹理创玩 草莓战宝炫色版', 158.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:07', 0, 0, 1);
+INSERT INTO `model` VALUES (42, 17, '壹理创玩 橙留香', 82.42, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:07', 0, 0, 1);
+INSERT INTO `model` VALUES (43, 17, '壹理创玩 橙留香炫色版', 158.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:07', 0, 0, 1);
+INSERT INTO `model` VALUES (44, 17, '壹理创玩 葡萄战宝', 79.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:08', 0, 0, 1);
+INSERT INTO `model` VALUES (45, 17, '壹理创玩 蜜桃战宝', 69.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:08', 0, 0, 1);
+INSERT INTO `model` VALUES (46, 17, '壹理创玩 集结战宝', 160.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:11', 0, 0, 1);
+INSERT INTO `model` VALUES (47, 17, '壹理创玩 金镖王', 82.68, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:11', 0, 0, 1);
+INSERT INTO `model` VALUES (48, 17, '壹理创玩 西瓜尊', 60.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:12', 0, 0, 1);
+INSERT INTO `model` VALUES (49, 17, '壹理创玩 椰子尊', 73.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:12', 0, 0, 1);
+INSERT INTO `model` VALUES (50, 17, '壹理创玩 魔动王', 82.60, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:12', 0, 0, 1);
+INSERT INTO `model` VALUES (51, 4, '无限新星 利扎德', 237.80, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:13', 0, 0, 1);
+INSERT INTO `model` VALUES (52, 4, '无限新星 复仇女神', 310.80, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:13', 0, 0, 1);
+INSERT INTO `model` VALUES (53, 4, '无限新星 雷霆魔鬼鱼', 208.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:13', 0, 0, 1);
+INSERT INTO `model` VALUES (54, 19, '五金 强袭自由', 140.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:14', 0, 0, 1);
+INSERT INTO `model` VALUES (55, 11, '长龙 黑强袭自由', 210.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:14', 0, 0, 1);
+INSERT INTO `model` VALUES (56, 11, '长龙 福冈牛', 60.56, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:14', 0, 0, 1);
+INSERT INTO `model` VALUES (57, 11, '长龙 5502牛', 60.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:14', 0, 0, 1);
+INSERT INTO `model` VALUES (58, 11, '长龙 5501元祖基地配色', 48.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:15', 0, 0, 1);
+INSERT INTO `model` VALUES (59, 11, '长龙 5503海牛', 73.10, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:15', 0, 0, 1);
+INSERT INTO `model` VALUES (60, 11, '长龙 mgsd黑色飞翼', 45.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:15', 0, 0, 1);
+INSERT INTO `model` VALUES (61, 11, '长龙 5501元祖', 52.83, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:16', 0, 0, 1);
+INSERT INTO `model` VALUES (62, 10, '萝播动漫 白露', 160.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:16', 0, 0, 1);
+INSERT INTO `model` VALUES (63, 1, '和模线 塔斯提尔套装', 156.04, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:16', 0, 0, 1);
+INSERT INTO `model` VALUES (64, 1, '和模线 拳击手套装', 162.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:16', 0, 0, 1);
+INSERT INTO `model` VALUES (65, 1, '和模线 孤影套装', 148.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:17', 0, 0, 1);
+INSERT INTO `model` VALUES (66, 1, '和模线 孤影单体1', 70.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:17', 0, 0, 1);
+INSERT INTO `model` VALUES (67, 1, '和模线 孤影单体2', 70.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:17', 0, 0, 1);
+INSERT INTO `model` VALUES (68, 1, '和模线 孤影单体3', 79.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:17', 0, 0, 1);
+INSERT INTO `model` VALUES (69, 1, '和模线 孤影单体4', 84.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:18', 0, 0, 1);
+INSERT INTO `model` VALUES (70, 13, '万象聚变 天启', 189.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:18', 0, 0, 1);
+INSERT INTO `model` VALUES (71, 23, '奇妙积木 夏侯惇', 104.30, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:18', 0, 0, 1);
+INSERT INTO `model` VALUES (72, 23, '奇妙积木 孙尚香限定', 83.85, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:19', 0, 0, 1);
+INSERT INTO `model` VALUES (73, 12, '大班 mega独角兽', 192.78, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:19', 0, 0, 1);
+INSERT INTO `model` VALUES (74, 12, '大班 pgu元祖', 270.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:19', 0, 0, 1);
+INSERT INTO `model` VALUES (75, 12, '大班 8827天使', 247.50, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:19', 0, 0, 1);
+INSERT INTO `model` VALUES (76, 16, '闪萌 扎古', 10.42, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:20', 0, 0, 1);
+INSERT INTO `model` VALUES (77, 16, '闪萌 红扎古', 7.02, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:20', 0, 0, 1);
+INSERT INTO `model` VALUES (78, 16, '闪萌 闪萌元祖凯蒂猫', 7.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:20', 0, 0, 1);
+INSERT INTO `model` VALUES (79, 2, '高晟文化 元灵皇帝', 169.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:21', 0, 0, 1);
+INSERT INTO `model` VALUES (80, 24, '神型科技 苍龙', 131.08, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:21', 0, 0, 1);
+INSERT INTO `model` VALUES (81, 6, '爱因塔 天幕+灯组', 590.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:21', 0, 0, 1);
+INSERT INTO `model` VALUES (82, 9, '千秋赏 千秋赏磁轨炮', 73.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:21', 0, 0, 1);
+INSERT INTO `model` VALUES (83, 22, '野想积木 米老鼠', 78.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:22', 0, 0, 1);
+INSERT INTO `model` VALUES (84, 22, '野想积木 唐老鸭', 78.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:22', 0, 0, 1);
+INSERT INTO `model` VALUES (85, 5, 'moshou moshou孙悟空', 247.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:22', 0, 0, 1);
+INSERT INTO `model` VALUES (86, 18, '塑灵模玩 白昼流星', 240.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:23', 0, 0, 1);
+INSERT INTO `model` VALUES (87, 25, 'ETM 迅击轨道炮', 55.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:23', 0, 0, 1);
+INSERT INTO `model` VALUES (88, 14, 'VT V-TIGER 威虎牛', 184.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:24', 0, 0, 1);
+INSERT INTO `model` VALUES (89, 14, 'VT V-TIGER 威虎海牛', 255.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:24', 0, 0, 1);
+INSERT INTO `model` VALUES (90, 7, '铭匠传 逍遥子', 145.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:24', 0, 0, 1);
+INSERT INTO `model` VALUES (91, 15, '熊猫 熊猫元祖', 78.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:25', 0, 0, 1);
+INSERT INTO `model` VALUES (92, 8, '将魂姬 舞狮*3', 165.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:25', 0, 0, 1);
+INSERT INTO `model` VALUES (93, 8, '将魂姬 懒惰', 287.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:25', 0, 0, 1);
+INSERT INTO `model` VALUES (94, 3, '费米盒子 卡布达', 92.40, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:26', 0, 0, 1);
+INSERT INTO `model` VALUES (95, 3, '费米盒子 呱呱蛙', 102.50, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:26', 0, 0, 1);
+INSERT INTO `model` VALUES (96, 21, '橘猫工业 第一弹', 71.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:26', 0, 0, 1);
+INSERT INTO `model` VALUES (97, 21, '橘猫工业 第二弹', 72.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:26', 0, 0, 1);
+INSERT INTO `model` VALUES (98, 21, '橘猫工业 第三弹', 76.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:27', 0, 0, 1);
+INSERT INTO `model` VALUES (99, 21, '橘猫工业 第四弹', 80.17, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:27', 0, 0, 1);
+INSERT INTO `model` VALUES (100, 21, '橘猫工业 第五弹', 73.53, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:27', 0, 0, 1);
+INSERT INTO `model` VALUES (101, 21, '橘猫工业 第一弹樱花', 53.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:28', 0, 0, 1);
+INSERT INTO `model` VALUES (102, 21, '橘猫工业 蜻蜓队长限定', 59.00, NULL, '2026-05-27 10:19:47', '2026-05-27 13:40:28', 0, 0, 1);
+
+-- ----------------------------
+-- Table structure for tool
+-- ----------------------------
+DROP TABLE IF EXISTS `tool`;
+CREATE TABLE `tool`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '工具名称',
+  `price` decimal(10, 2) NOT NULL COMMENT '价格',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted` tinyint(1) NULL DEFAULT 0,
+  `sold` tinyint UNSIGNED NULL DEFAULT 0 COMMENT '是否售出',
+  `user_id` bigint NULL DEFAULT NULL COMMENT '用户ID',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_name`(`name` ASC) USING BTREE,
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '工具表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tool
+-- ----------------------------
+INSERT INTO `tool` VALUES (1, '黑色美纹纸胶', 5.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:38:26', 0, 0, 1);
+INSERT INTO `tool` VALUES (2, '毛毡垫', 13.66, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:23', 0, 0, 1);
+INSERT INTO `tool` VALUES (3, '渗线液', 13.95, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:27', 0, 0, 1);
+INSERT INTO `tool` VALUES (4, '灯带', 20.48, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:35', 0, 0, 1);
+INSERT INTO `tool` VALUES (5, '马可笔12支', 22.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:37', 0, 0, 1);
+INSERT INTO `tool` VALUES (6, '磁条（2个）', 22.73, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:37', 0, 0, 1);
+INSERT INTO `tool` VALUES (7, '货架2', 100.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:37', 0, 0, 1);
+INSERT INTO `tool` VALUES (8, '得力剪钳', 8.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:37', 0, 0, 1);
+INSERT INTO `tool` VALUES (9, '美家龙水口钳', 23.36, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:38', 0, 0, 1);
+INSERT INTO `tool` VALUES (10, '长龙元祖盒', 28.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:38', 0, 0, 1);
+INSERT INTO `tool` VALUES (11, '亚克力支架', 29.18, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:38', 0, 0, 1);
+INSERT INTO `tool` VALUES (12, 'ew匠牛地台', 30.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:38', 0, 0, 1);
+INSERT INTO `tool` VALUES (13, '得力工具套装', 33.95, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:38', 0, 0, 1);
+INSERT INTO `tool` VALUES (14, '亚克力收纳盒', 37.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (15, '金属马可笔24支', 45.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (16, '透明亚克力板', 75.91, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (17, '亚克力收纳盒*3', 97.22, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (18, '货架', 120.39, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (19, '隔音棉', 200.44, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:39', 0, 0, 1);
+INSERT INTO `tool` VALUES (20, '背胶', 12.84, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:46', 0, 0, 1);
+INSERT INTO `tool` VALUES (21, '亚克力展示架', 25.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:40', 0, 0, 1);
+INSERT INTO `tool` VALUES (22, 'led灯带', 56.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:43', 0, 0, 1);
+INSERT INTO `tool` VALUES (23, '亚克力板', 180.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:40', 0, 0, 1);
+INSERT INTO `tool` VALUES (24, '地毯', 15.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:41', 0, 0, 1);
+INSERT INTO `tool` VALUES (25, '亚克力收纳盒*4', 100.00, NULL, '2026-05-27 10:12:56', '2026-05-27 13:39:42', 0, 0, 1);
+
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码(加密)',
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '邮箱',
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '手机号',
+  `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '昵称',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '头像URL',
+  `status` tinyint NULL DEFAULT 1 COMMENT '账号状态: 0-禁用, 1-正常',
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_username`(`username` ASC) USING BTREE,
+  UNIQUE INDEX `uk_email`(`email` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (1, 'admin', '$2a$10$/mIzhl7IQVk2HS52nYrfoOn1elmC8MZKz7VkrN/oHvPDGCAgyuRoy', 'admin@example.com', '13222222222', '翔子', 'http://localhost:8080/uploads/avatars/cbc8ce43-9443-4fa7-904a-40bcd5973a9a.png', 1, '2026-05-27 11:39:27', '2026-05-27 13:42:28');
+INSERT INTO `user` VALUES (2, '123456', '$2a$10$CNsxC4PXpEyneEGBaP7ct.1SMc9DF/bps1ETiXpnxuqEGdWbZsAvK', '', '', '小王', NULL, 1, '2026-05-27 14:04:09', '2026-05-27 14:04:09');
+
+SET FOREIGN_KEY_CHECKS = 1;
