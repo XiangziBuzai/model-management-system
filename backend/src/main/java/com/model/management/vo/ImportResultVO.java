@@ -7,8 +7,10 @@ import java.util.List;
 
 @Data
 public class ImportResultVO {
+    private int totalRows;
     private int successCount;
     private int failCount;
+    private long duration;
     private List<ErrorRow> errorList = new ArrayList<>();
 
     @Data

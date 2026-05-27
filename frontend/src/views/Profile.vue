@@ -397,4 +397,64 @@ onMounted(() => {
   font-size: 12px;
   color: #909399;
 }
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 12px;
+  }
+  
+  .profile-card {
+    border-radius: 12px;
+  }
+  
+  .card-header {
+    font-size: 16px;
+  }
+  
+  .profile-form {
+    max-width: 100%;
+  }
+  
+  /* 头像上传改为垂直布局 */
+  .avatar-upload {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .avatar-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .avatar-actions .el-button {
+    width: 100%;
+  }
+  
+  /* 表单按钮组 */
+  :deep(.el-form-item:last-child .el-button) {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 8px;
+  }
+  
+  .profile-card {
+    border-radius: 8px;
+  }
+  
+  .card-header {
+    font-size: 15px;
+  }
+  
+  :deep(.el-avatar) {
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
 </style>

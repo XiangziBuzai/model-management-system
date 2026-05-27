@@ -1,6 +1,7 @@
 <template>
   <el-container class="layout-container">
-    <el-aside width="220px" class="sidebar">
+    <!-- PC端侧边栏 -->
+    <el-aside width="220px" class="sidebar desktop-sidebar">
       <div class="logo">
         <div class="logo-icon">
           <el-icon :size="28"><Box /></el-icon>
@@ -79,6 +80,22 @@
       <el-main class="main-content">
         <router-view />
       </el-main>
+      
+      <!-- 移动端底部导航 -->
+      <div class="mobile-tabbar">
+        <div 
+          v-for="item in navItems" 
+          :key="item.path"
+          class="tab-item"
+          :class="{ active: route.path === item.path }"
+          @click="handleTabClick(item.path)"
+        >
+          <el-icon :size="20">
+            <component :is="item.icon" />
+          </el-icon>
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
     </el-container>
   </el-container>
 </template>
@@ -95,6 +112,14 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const activeMenu = computed(() => route.path)
+
+// 导航菜单配置
+const navItems = [
+  { path: '/dashboard', icon: 'DataAnalysis', label: '统计' },
+  { path: '/models', icon: 'Box', label: '模型' },
+  { path: '/tools', icon: 'Tools', label: '工具' },
+  { path: '/import', icon: 'Upload', label: '导入' }
+]
 
 const currentTitle = computed(() => {
   return route.meta.title || '数据统计'
@@ -154,6 +179,13 @@ async function handleCommand(command) {
     } catch {
       // 用户取消
     }
+  }
+}
+
+// 处理移动端底部导航点击
+function handleTabClick(path) {
+  if (path && path !== route.path) {
+    router.push(path)
   }
 }
 
@@ -340,33 +372,95 @@ async function handleCommand(command) {
 
 /* 响应式适配 */
 @media (max-width: 768px) {
-  :deep(.el-aside) {
-    width: 64px !important;
-  }
-  
-  .logo h2 {
-    display: none;
-  }
-  
-  .logo {
-    justify-content: center;
-    padding: 0;
-  }
-  
-  :deep(.el-menu-item span) {
-    display: none;
-  }
-  
-  :deep(.el-menu-item .el-icon) {
-    margin-right: 0;
+  /* 隐藏PC端侧边栏 */
+  .desktop-sidebar {
+    display: none !important;
   }
   
   .header {
     padding: 0 12px;
+    height: 50px;
   }
   
   .username {
     display: none;
+  }
+  
+  .breadcrumb {
+    display: none;
+  }
+  
+  .menu-toggle {
+    display: none;
+  }
+  
+  .current-time {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .current-time .el-icon {
+    display: none;
+  }
+  
+  .main-content {
+    min-height: calc(100vh - 50px - 50px);
+    padding-bottom: 50px; /* 为底部导航留空间 */
+  }
+  
+  /* 移动端底部导航样式 */
+  .mobile-tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: #fff;
+    border-top: 1px solid #e4e7ed;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 12px;
+    color: #909399;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 6px 0;
+  }
+  
+  .tab-item:hover {
+    color: #409EFF;
+  }
+  
+  .tab-item.active {
+    color: #409EFF;
+    font-weight: 500;
+  }
+  
+  .tab-item .el-icon {
+    font-size: 20px;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .header {
+    padding: 0 8px;
+  }
+  
+  .current-time {
+    font-size: 11px;
+    padding: 4px 8px;
   }
 }
 </style>

@@ -172,7 +172,9 @@ async function handleImport() {
     const result = await importExcel(selectedFile.value, importType.value)
     importResult.value = result
     
-    if (result.failCount === 0) {
+    if (result.successCount === 0 && result.failCount === 0) {
+      ElMessage.warning('文件中没有有效数据，请检查文件格式和内容')
+    } else if (result.failCount === 0) {
       ElMessage.success(`导入成功！共导入 ${result.successCount} 条数据`)
     } else {
       ElMessage.warning(`导入完成！成功 ${result.successCount} 条，失败 ${result.failCount} 条`)
@@ -221,5 +223,86 @@ async function handleImport() {
 
 .instruction-card {
   margin-top: 20px;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .excel-import {
+    padding: 12px;
+  }
+  
+  /* 导入类型表单改为垂直布局 */
+  :deep(.import-type-form .el-form-item) {
+    margin-right: 0;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  
+  :deep(.import-type-form .el-form-item__content) {
+    width: 100%;
+  }
+  
+  /* 上传区域优化 */
+  .upload-demo {
+    margin: 12px 0;
+  }
+  
+  :deep(.el-upload-dragger) {
+    padding: 20px 10px;
+  }
+  
+  :deep(.el-upload__text) {
+    font-size: 13px;
+  }
+  
+  :deep(.el-upload__tip) {
+    font-size: 12px;
+  }
+  
+  /* 操作按钮 */
+  .action-buttons {
+    margin: 12px 0;
+  }
+  
+  :deep(.action-buttons .el-button) {
+    width: 100%;
+  }
+  
+  /* 结果表格优化 */
+  :deep(.el-table) {
+    font-size: 12px;
+  }
+  
+  :deep(.el-descriptions) {
+    font-size: 13px;
+  }
+  
+  /* 时间轴优化 */
+  :deep(.el-timeline-item__content p) {
+    font-size: 13px;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .excel-import {
+    padding: 8px;
+  }
+  
+  :deep(.el-card) {
+    border-radius: 8px;
+  }
+  
+  .card-header {
+    font-size: 15px;
+  }
+  
+  :deep(.el-upload-dragger) {
+    padding: 15px 8px;
+  }
+  
+  :deep(.el-upload__text) {
+    font-size: 12px;
+  }
 }
 </style>

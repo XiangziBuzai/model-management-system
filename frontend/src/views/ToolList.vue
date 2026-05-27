@@ -75,12 +75,14 @@
 
     <!-- 表格 -->
     <el-card class="table-card" shadow="hover">
+      <!-- PC端显示表格 -->
       <el-table
         v-loading="loading"
         :data="tableData"
         border
         stripe
         highlight-current-row
+        class="desktop-table"
       >
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="name" label="工具名称" min-width="200" show-overflow-tooltip>
@@ -123,6 +125,48 @@
           </template>
         </el-table-column>
       </el-table>
+      
+      <!-- 移动端显示卡片列表 -->
+      <div class="mobile-cards" v-loading="loading">
+        <div v-for="item in tableData" :key="item.id" class="tool-card">
+          <div class="card-header">
+            <div class="card-title">
+              <el-icon class="tool-icon"><Tools /></el-icon>
+              <span class="tool-name">{{ item.name }}</span>
+            </div>
+            <el-tag 
+              :type="item.sold === 1 ? 'success' : 'info'"
+              effect="dark"
+              size="small"
+            >
+              {{ item.sold === 1 ? '已售出' : '未售出' }}
+            </el-tag>
+          </div>
+          <div class="card-body">
+            <div class="card-item">
+              <span class="label">价格：</span>
+              <span class="value price-text">¥{{ item.price }}</span>
+            </div>
+            <div class="card-item" v-if="item.remark">
+              <span class="label">备注：</span>
+              <span class="value">{{ item.remark }}</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <el-button type="primary" size="small" @click="handleEdit(item)">
+              <el-icon><Edit /></el-icon>
+              <span>编辑</span>
+            </el-button>
+            <el-button type="danger" size="small" @click="handleDelete(item)">
+              <el-icon><Delete /></el-icon>
+              <span>删除</span>
+            </el-button>
+          </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <el-empty v-if="!loading && tableData.length === 0" description="暂无数据" />
+      </div>
 
       <!-- 分页 -->
       <div class="pagination-wrapper">
@@ -513,6 +557,79 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+/* 移动端卡片列表 */
+.mobile-cards {
+  display: none;
+}
+
+.tool-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.tool-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tool-card .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.tool-card .tool-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-card .card-body {
+  margin-bottom: 12px;
+}
+
+.tool-card .card-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.tool-card .card-item .label {
+  color: #909399;
+  min-width: 50px;
+}
+
+.tool-card .card-item .value {
+  color: #606266;
+  flex: 1;
+}
+
+.tool-card .card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tool-card .card-actions .el-button {
+  flex: 1;
+}
+
 /* 表单对话框优化 */
 :deep(.el-dialog) {
   border-radius: 12px;
@@ -538,6 +655,27 @@ onMounted(() => {
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* 对话框移动端适配 */
+@media (max-width: 768px) {
+  :deep(.el-dialog) {
+    width: 90% !important;
+    margin-top: 5vh !important;
+  }
+  
+  :deep(.el-dialog__body) {
+    padding: 20px 15px;
+  }
+  
+  :deep(.el-form-item__label) {
+    font-size: 13px;
+  }
+  
+  :deep(.el-input__inner),
+  :deep(.el-textarea__inner) {
+    font-size: 14px;
+  }
+}
+
 /* 响应式适配 */
 @media (max-width: 768px) {
   .tool-list-container {
@@ -552,9 +690,70 @@ onMounted(() => {
     font-size: 20px;
   }
   
+  /* 搜索表单改为垂直布局 */
   :deep(.el-form--inline .el-form-item) {
-    margin-right: 8px;
+    margin-right: 0;
     margin-bottom: 12px;
+    width: 100%;
+  }
+  
+  :deep(.el-form--inline .el-form-item > .el-input),
+  :deep(.el-form--inline .el-form-item > .el-select),
+  :deep(.el-form--inline .el-form-item > .el-input-number) {
+    width: 100% !important;
+  }
+  
+  /* 按钮组改为垂直排列 */
+  :deep(.el-form-item__content) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  /* 隐藏PC端表格，显示移动端卡片 */
+  .desktop-table {
+    display: none;
+  }
+  
+  .mobile-cards {
+    display: block;
+  }
+  
+  /* 分页优化 */
+  .pagination-wrapper {
+    justify-content: center;
+  }
+  
+  :deep(.el-pagination) {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  :deep(.el-pagination .el-pagination__sizes),
+  :deep(.el-pagination .el-pagination__jump) {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .tool-list-container {
+    padding: 8px;
+  }
+  
+  .search-card,
+  .table-card {
+    border-radius: 8px;
+  }
+  
+  :deep(.el-table) {
+    font-size: 12px;
+  }
+  
+  .price-text {
+    font-size: 13px;
   }
 }
 </style>

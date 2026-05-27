@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard">
     <!-- 顶部统计卡片 -->
-    <el-row :gutter="20" class="stats-cards">
-      <el-col :xs="24" :sm="12" :md="6">
+    <el-row :gutter="8" class="stats-cards">
+      <el-col :xs="6" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card model-card">
           <div class="stat-item">
             <div class="stat-icon">
@@ -15,7 +15,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="12" :md="6">
+      <el-col :xs="6" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card tool-card">
           <div class="stat-item">
             <div class="stat-icon">
@@ -28,7 +28,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="12" :md="6">
+      <el-col :xs="6" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card price-card">
           <div class="stat-item">
             <div class="stat-icon">
@@ -41,7 +41,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="12" :md="6">
+      <el-col :xs="6" :sm="12" :md="6">
         <el-card shadow="hover" class="stat-card total-price-card">
           <div class="stat-item">
             <div class="stat-icon">
@@ -125,6 +125,9 @@ function renderManufacturerChart(data) {
     manufacturerChart = echarts.init(manufacturerChartRef.value)
   }
   
+  // 检测是否为移动端
+  const isMobile = window.innerWidth <= 768
+  
   const option = {
     color: ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#1abc9c', '#3498db'],
     tooltip: {
@@ -134,42 +137,50 @@ function renderManufacturerChart(data) {
       borderColor: '#e4e7ed',
       borderWidth: 1,
       textStyle: {
-        color: '#303133'
+        color: '#303133',
+        fontSize: isMobile ? 12 : 14
       }
     },
     legend: {
-      orient: 'vertical',
-      left: 'left',
-      top: 'middle',
-      itemWidth: 14,
-      itemHeight: 14,
+      orient: isMobile ? 'horizontal' : 'vertical',
+      left: isMobile ? 'center' : 'left',
+      top: isMobile ? 'bottom' : 'middle',
+      bottom: isMobile ? 10 : undefined,
+      itemWidth: isMobile ? 10 : 14,
+      itemHeight: isMobile ? 10 : 14,
       textStyle: {
-        fontSize: 13
+        fontSize: isMobile ? 11 : 13
+      },
+      pageTextStyle: {
+        fontSize: isMobile ? 10 : 12
       }
     },
     series: [
       {
         name: '模型数量',
         type: 'pie',
-        radius: ['40%', '70%'],
-        center: ['60%', '50%'],
+        radius: isMobile ? ['35%', '60%'] : ['40%', '70%'],
+        center: isMobile ? ['50%', '45%'] : ['60%', '50%'],
         avoidLabelOverlap: true,
         itemStyle: {
-          borderRadius: 8,
+          borderRadius: isMobile ? 6 : 8,
           borderColor: '#fff',
           borderWidth: 2
         },
         label: {
-          show: true,
+          show: !isMobile,
           position: 'outside',
           formatter: '{b}\n{c}',
-          fontSize: 13,
+          fontSize: isMobile ? 11 : 13,
           fontWeight: 'bold'
+        },
+        labelLine: {
+          show: !isMobile
         },
         emphasis: {
           label: {
             show: true,
-            fontSize: 16,
+            fontSize: isMobile ? 13 : 16,
             fontWeight: 'bold'
           },
           itemStyle: {
@@ -197,6 +208,9 @@ function renderPriceChart(data) {
     priceChart = echarts.init(priceChartRef.value)
   }
   
+  // 检测是否为移动端
+  const isMobile = window.innerWidth <= 768
+  
   // 后端返回的是 Map<String, Long>，需要转换为数组
   const chartData = data ? Object.entries(data).map(([range, count]) => ({
     priceRange: range,
@@ -214,13 +228,14 @@ function renderPriceChart(data) {
       borderColor: '#e4e7ed',
       borderWidth: 1,
       textStyle: {
-        color: '#303133'
+        color: '#303133',
+        fontSize: isMobile ? 12 : 14
       }
     },
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
+      left: isMobile ? '2%' : '3%',
+      right: isMobile ? '2%' : '4%',
+      bottom: isMobile ? '15%' : '3%',
       top: '10%',
       containLabel: true
     },
@@ -233,9 +248,10 @@ function renderPriceChart(data) {
         }
       },
       axisLabel: {
-        fontSize: 12,
+        fontSize: isMobile ? 10 : 12,
         color: '#606266',
-        rotate: 30
+        rotate: isMobile ? 45 : 30,
+        interval: isMobile ? 0 : 'auto'
       }
     },
     yAxis: {
@@ -252,7 +268,7 @@ function renderPriceChart(data) {
         }
       },
       axisLabel: {
-        fontSize: 12,
+        fontSize: isMobile ? 10 : 12,
         color: '#606266'
       }
     },
@@ -260,7 +276,7 @@ function renderPriceChart(data) {
       {
         name: '数量',
         type: 'bar',
-        barWidth: '50%',
+        barWidth: isMobile ? '60%' : '50%',
         data: chartData.map(item => item.count),
         itemStyle: {
           borderRadius: [8, 8, 0, 0],
@@ -288,9 +304,19 @@ onMounted(() => {
   loadStatistics()
   
   // 响应式调整图表大小
+  let resizeTimer = null
   window.addEventListener('resize', () => {
-    manufacturerChart?.resize()
-    priceChart?.resize()
+    // 使用防抖优化性能
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => {
+      manufacturerChart?.resize()
+      priceChart?.resize()
+      
+      // 重新渲染图表以适应新的屏幕尺寸
+      if (manufacturerChart && priceChart) {
+        loadStatistics()
+      }
+    }, 200)
   })
 })
 </script>
@@ -308,11 +334,12 @@ onMounted(() => {
 }
 
 .stat-card {
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
+  margin-bottom: 8px;
 }
 
 .stat-card::before {
@@ -347,15 +374,18 @@ onMounted(() => {
 
 .stat-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 8px 0;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px;
+  text-align: center;
 }
 
 .stat-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -381,17 +411,23 @@ onMounted(() => {
 
 .stat-content {
   flex: 1;
+  width: 100%;
+  min-width: 0;
 }
 
 .stat-label {
-  font-size: 14px;
+  font-size: 11px;
   color: #909399;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-value {
-  font-size: 28px;
+  font-size: 18px;
   font-weight: bold;
   color: #303133;
   line-height: 1;
@@ -432,12 +468,96 @@ onMounted(() => {
     padding: 12px;
   }
   
+  .stats-cards {
+    margin-bottom: 12px;
+  }
+  
+  .stat-card {
+    margin-bottom: 8px;
+  }
+  
+  .stat-item {
+    padding: 8px 2px;
+    gap: 3px;
+  }
+  
   .stat-value {
-    font-size: 24px;
+    font-size: 16px;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+    margin-bottom: 3px;
+  }
+  
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+  
+  .stat-icon .el-icon {
+    font-size: 16px !important;
+  }
+  
+  .charts {
+    margin-top: 12px;
   }
   
   .chart-container {
     height: 300px;
+  }
+  
+  .card-header {
+    font-size: 14px;
+  }
+}
+
+/* 小屏幕手机适配 */
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 8px;
+  }
+  
+  .stats-cards {
+    margin-bottom: 10px;
+  }
+  
+  .stat-card {
+    margin-bottom: 6px;
+    border-radius: 8px;
+  }
+  
+  .stat-item {
+    padding: 6px 2px;
+    gap: 2px;
+  }
+  
+  .stat-value {
+    font-size: 14px;
+  }
+  
+  .stat-label {
+    font-size: 9px;
+    margin-bottom: 2px;
+  }
+  
+  .stat-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+  }
+  
+  .stat-icon .el-icon {
+    font-size: 14px !important;
+  }
+  
+  .chart-container {
+    height: 250px;
+  }
+  
+  .card-header {
+    font-size: 13px;
   }
 }
 </style>
