@@ -1,8 +1,14 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
+// 开发环境使用相对路径，通过 Vite 代理转发
+// 生产环境使用环境变量中的完整 URL
+const baseURL = import.meta.env.DEV 
+  ? '/api' 
+  : (import.meta.env.VITE_API_BASE_URL || '/api')
+
 const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL,
   timeout: 30000
 })
 
