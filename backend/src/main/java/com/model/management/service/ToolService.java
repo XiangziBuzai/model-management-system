@@ -6,12 +6,24 @@ import com.model.management.dto.ToolSaveDTO;
 import com.model.management.entity.Tool;
 import com.model.management.vo.ToolVO;
 
+import java.util.List;
+
 public interface ToolService {
     PageResult<Tool> page(ToolQueryDTO dto);
     Tool getById(Long id);
     Tool create(ToolSaveDTO dto);
     Tool update(Long id, ToolSaveDTO dto);
     boolean delete(Long id);
+    
+    /**
+     * 批量设置工具为公开
+     */
+    boolean batchSetPublic(List<Long> ids);
+    
+    /**
+     * 批量设置工具为私有
+     */
+    boolean batchSetPrivate(List<Long> ids);
     
     /**
      * 分页查询公开工具列表（广场使用）
@@ -33,4 +45,14 @@ public interface ToolService {
      * 分页查询指定用户的公开工具列表
      */
     PageResult<ToolVO> getPublicToolsByUser(Long userId, int pageNum, int pageSize);
+    
+    /**
+     * 设置当前用户所有工具为公开
+     */
+    boolean setAllPublic();
+    
+    /**
+     * 设置当前用户所有工具为私有
+     */
+    boolean setAllPrivate();
 }

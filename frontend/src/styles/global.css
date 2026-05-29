@@ -17,3 +17,163 @@ html, body {
   min-height: 100%;
   overflow: auto;
 }
+
+/* 炫酷霓虹发光动画 */
+@keyframes neonGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px #409EFF,
+      0 0 10px #409EFF,
+      0 0 15px #409EFF,
+      0 0 20px #409EFF;
+  }
+  50% {
+    box-shadow: 
+      0 0 10px #409EFF,
+      0 0 20px #409EFF,
+      0 0 30px #409EFF,
+      0 0 40px #409EFF;
+  }
+}
+
+@keyframes rainbowGlow {
+  0% {
+    box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+  }
+  25% {
+    box-shadow: 0 0 10px #00ff80, 0 0 20px #00ff80;
+  }
+  50% {
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+  }
+  75% {
+    box-shadow: 0 0 10px #8000ff, 0 0 20px #8000ff;
+  }
+  100% {
+    box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes gradientBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 炫酷渐变背景类 */
+.cool-gradient-bg {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientBackground 15s ease infinite;
+}
+
+/* 霓虹边框类 */
+.neon-border {
+  animation: neonGlow 2s ease-in-out infinite;
+}
+
+/* 彩虹霓虹边框 */
+.rainbow-border {
+  animation: rainbowGlow 3s ease-in-out infinite;
+}
+
+/* 悬浮漂浮效果 */
+.float-effect {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 脉冲发光效果 */
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* 炫酷文字发光效果 */
+.text-glow {
+  text-shadow: 
+    0 0 10px #409EFF,
+    0 0 20px #409EFF,
+    0 0 30px #409EFF;
+}
+
+/* 炫酷卡片悬停效果 */
+.cool-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cool-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(64, 158, 255, 0.3),
+    0 0 30px rgba(64, 158, 255, 0.2);
+}
+
+/* 炫酷按钮效果 */
+.cool-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cool-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.cool-button:hover::before {
+  left: 100%;
+}
+
+.cool-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 8px 25px rgba(64, 158, 255, 0.4),
+    0 0 20px rgba(64, 158, 255, 0.2);
+}
+
+.cool-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 炫酷标签效果 */
+.cool-tag {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cool-tag:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

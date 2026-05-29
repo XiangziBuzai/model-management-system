@@ -24,7 +24,7 @@
               <div class="feature-item">
                 <el-icon :size="20" color="#409EFF"><Box /></el-icon>
                 <div class="feature-text">
-                  <strong>模型管理</strong>
+                  <strong>Model Share</strong>
                   <p>管理和展示各类AI模型，支持模型的增删改查操作</p>
                 </div>
               </div>
@@ -180,11 +180,14 @@ const dialogWidth = computed(() => {
   }
 })
 
-function handleResize() {
-  windowWidth.value = window.innerWidth
-}
-
 const STORAGE_KEY = 'welcome_guide_dismissed'
+
+function checkShouldShowGuide() {
+  const dismissed = localStorage.getItem(STORAGE_KEY)
+  if (!dismissed) {
+    visible.value = true
+  }
+}
 
 function closeGuide() {
   if (notShowAgain.value) {
@@ -201,6 +204,18 @@ function showWelcomeGuide() {
   notShowAgain.value = false
   visible.value = true
 }
+
+function handleResize() {
+  windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 defineExpose({
   showWelcomeGuide

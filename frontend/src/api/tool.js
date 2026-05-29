@@ -42,3 +42,37 @@ export function getToolById(id) {
     method: 'get'
   })
 }
+
+// 批量设置工具为公开
+export function batchSetToolsPublic(ids) {
+  return request({
+    url: '/tools/batch/public',
+    method: 'put',
+    data: ids
+  })
+}
+
+// 批量设置工具为私有
+export function batchSetToolsPrivate(ids) {
+  return request({
+    url: '/tools/batch/private',
+    method: 'put',
+    data: ids
+  })
+}
+
+// 设置所有工具为公开
+export function setAllToolsPublic() {
+  return request({
+    url: '/tools/all/public',
+    method: 'put'
+  })
+}
+
+// 设置所有工具为私有
+export function setAllToolsPrivate() {
+  return request({
+    url: '/tools/all/private',
+    method: 'put'
+  })
+}

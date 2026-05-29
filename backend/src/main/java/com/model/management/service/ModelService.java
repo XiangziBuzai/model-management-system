@@ -16,6 +16,16 @@ public interface ModelService {
     boolean batchDelete(List<Long> ids);
     
     /**
+     * 批量设置模型为公开
+     */
+    boolean batchSetPublic(List<Long> ids);
+    
+    /**
+     * 批量设置模型为私有
+     */
+    boolean batchSetPrivate(List<Long> ids);
+    
+    /**
      * 分页查询公开模型列表（广场使用）
      * @param sortBy 排序方式：newest-最新（默认），hot-最热
      */
@@ -35,4 +45,14 @@ public interface ModelService {
      * 分页查询指定用户的公开模型列表
      */
     PageResult<ModelVO> getPublicModelsByUser(Long userId, int pageNum, int pageSize);
+    
+    /**
+     * 设置当前用户所有模型为公开
+     */
+    boolean setAllPublic();
+    
+    /**
+     * 设置当前用户所有模型为私有
+     */
+    boolean setAllPrivate();
 }

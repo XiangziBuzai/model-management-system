@@ -6,7 +6,7 @@
         <div class="logo-icon">
           <el-icon :size="28"><Box /></el-icon>
         </div>
-        <h2>模型管理系统</h2>
+        <h2>Model Share</h2>
       </div>
       <el-menu
         :default-active="activeMenu"
@@ -217,12 +217,37 @@ function handleTabClick(path) {
   width: 100vw;
 }
 
-/* 侧边栏样式 */
+/* 侧边栏样式 - 炫酷效果 */
 .sidebar {
-  background: linear-gradient(180deg, #304156 0%, #2b3a4c 100%);
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   color: #fff;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    2px 0 20px rgba(0, 0, 0, 0.3),
+    inset 0 0 60px rgba(64, 158, 255, 0.05);
   transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(64, 158, 255, 0.03) 50%,
+    transparent 70%
+  );
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .logo {
@@ -231,10 +256,18 @@ function handleTabClick(path) {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: linear-gradient(135deg, #409EFF, #79bbff);
+  background: linear-gradient(135deg, #409EFF, #79bbff, #67c23a);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
   padding: 0 20px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.4);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .logo::after {
@@ -244,18 +277,26 @@ function handleTabClick(path) {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 .logo-icon {
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 .logo h2 {
@@ -263,31 +304,68 @@ function handleTabClick(path) {
   font-size: 18px;
   margin: 0;
   font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.8),
+    0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* 菜单样式优化 */
+/* 菜单样式优化 - 炫酷效果 */
 :deep(.el-menu) {
   border-right: none;
+  background: transparent !important;
 }
 
 :deep(.el-menu-item) {
   height: 50px;
   line-height: 50px;
-  margin: 4px 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  margin: 6px 12px;
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.el-menu-item::before) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+:deep(.el-menu-item:hover::before) {
+  left: 100%;
 }
 
 :deep(.el-menu-item:hover) {
-  background-color: rgba(64, 158, 255, 0.15) !important;
-  transform: translateX(4px);
+  background: linear-gradient(90deg, rgba(64, 158, 255, 0.2), rgba(103, 194, 58, 0.1)) !important;
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.3);
 }
 
 :deep(.el-menu-item.is-active) {
   background: linear-gradient(90deg, #409EFF, #79bbff) !important;
   color: #fff !important;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(64, 158, 255, 0.4),
+    0 0 30px rgba(64, 158, 255, 0.2);
+  animation: activeGlow 2s ease-in-out infinite;
+}
+
+@keyframes activeGlow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 20px rgba(64, 158, 255, 0.4),
+      0 0 30px rgba(64, 158, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 4px 25px rgba(64, 158, 255, 0.5),
+      0 0 40px rgba(64, 158, 255, 0.3);
+  }
 }
 
 :deep(.el-menu-item .el-icon) {
@@ -295,16 +373,20 @@ function handleTabClick(path) {
   font-size: 18px;
 }
 
-/* 头部样式 */
+/* 头部样式 - 炫酷效果 */
 .header {
-  background: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(64, 158, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   height: 70px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 0 40px rgba(64, 158, 255, 0.05);
+  transition: all 0.3s ease;
 }
 
 .header-left {
@@ -354,23 +436,48 @@ function handleTabClick(path) {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #f5f7fa, #e8ecf1);
-  border-radius: 8px;
-  color: #606266;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.1), rgba(103, 194, 58, 0.05));
+  border-radius: 12px;
+  color: #409EFF;
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(64, 158, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.current-time::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(64, 158, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.current-time:hover::before {
+  left: 100%;
 }
 
 .current-time:hover {
-  background: linear-gradient(135deg, #e8ecf1, #dce1e6);
-  color: #409EFF;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.2), rgba(103, 194, 58, 0.1));
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.3);
 }
 
 .current-time .el-icon {
   color: #409EFF;
-  font-size: 16px;
+  font-size: 18px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
 .user-info {
@@ -384,12 +491,13 @@ function handleTabClick(path) {
   font-size: 14px;
 }
 
-/* 主内容区域 */
+/* 主内容区域 - 炫酷效果 */
 .main-content {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  background: linear-gradient(135deg, rgba(245, 247, 250, 0.8) 0%, rgba(232, 236, 241, 0.8) 100%);
   padding: 0;
   min-height: calc(100vh - 70px);
   overflow-x: hidden;
+  position: relative;
 }
 
 /* 移动端底部导航 */

@@ -12,7 +12,7 @@
             <span>首页</span>
           </router-link>
           <router-link to="/square/orders" class="nav-link">
-            <el-icon><ShoppingCart /></el-icon>
+            <el-icon><List /></el-icon>
             <span>订单</span>
           </router-link>
           <router-link to="/square/messages" class="nav-link">
@@ -92,21 +92,23 @@
     <!-- 底部导航栏（仅移动端显示） -->
     <div class="bottom-nav">
       <router-link to="/square/home" class="nav-item" active-class="active">
-        <el-icon><HomeFilled /></el-icon>
+        <span class="icon-wrapper"><el-icon><HomeFilled /></el-icon></span>
         <span>首页</span>
       </router-link>
       <router-link to="/square/orders" class="nav-item" active-class="active">
-        <el-icon><ShoppingCart /></el-icon>
+        <span class="icon-wrapper"><el-icon><List /></el-icon></span>
         <span>订单</span>
       </router-link>
       <router-link to="/square/messages" class="nav-item" active-class="active">
-        <el-badge :value="unreadCount" :hidden="unreadCount === 0" :max="99">
-          <el-icon><ChatDotRound /></el-icon>
-        </el-badge>
+        <span class="icon-wrapper">
+          <el-badge :value="unreadCount" :hidden="unreadCount === 0" :max="99">
+            <el-icon><ChatDotRound /></el-icon>
+          </el-badge>
+        </span>
         <span>消息</span>
       </router-link>
       <router-link to="/square/profile" class="nav-item" active-class="active">
-        <el-icon><UserFilled /></el-icon>
+        <span class="icon-wrapper"><el-icon><UserFilled /></el-icon></span>
         <span>我</span>
       </router-link>
     </div>
@@ -119,7 +121,7 @@ import { useRoute, useRouter } from 'vue-router'
 import {
   HomeFilled,
   ChatDotRound,
-  ShoppingCart,
+  List,
   ArrowDown,
   User,
   UserFilled,
@@ -194,22 +196,77 @@ watch(() => route.path, (newPath, oldPath) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f7fa;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
   height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
-/* PC端顶部导航栏 */
+.square-layout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 50%, rgba(66, 129, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.square-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(64, 158, 255, 0.5), 0 0 10px rgba(64, 158, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(64, 158, 255, 0.8), 0 0 40px rgba(64, 158, 255, 0.4); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
 .top-nav {
-  background: #fff;
-  border-bottom: 1px solid #e4e7ed;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: none; /* 移动端隐藏 */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: none;
   flex-shrink: 0;
 }
 
 .nav-content {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
   height: 60px;
@@ -236,7 +293,9 @@ watch(() => route.path, (newPath, oldPath) => {
 .page-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(64, 158, 255, 0.5);
+  animation: neon-flicker 3s infinite;
 }
 
 .nav-right {
@@ -249,16 +308,37 @@ watch(() => route.path, (newPath, oldPath) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
-  background: #f5f7fa;
-  border-radius: 20px;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.2), rgba(64, 158, 255, 0.05));
+  border: 1px solid rgba(64, 158, 255, 0.3);
+  border-radius: 25px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-info-pc::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.user-info-pc:hover::before {
+  left: 100%;
 }
 
 .user-info-pc:hover {
-  background: #ecf5ff;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.4), rgba(64, 158, 255, 0.2));
+  border-color: rgba(64, 158, 255, 0.6);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(64, 158, 255, 0.4), 0 0 15px rgba(64, 158, 255, 0.2);
 }
 
 .user-info-mobile {
@@ -268,44 +348,83 @@ watch(() => route.path, (newPath, oldPath) => {
 }
 
 .user-avatar {
-  border: 2px solid #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(64, 158, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(64, 158, 255, 0.5);
 }
 
 .user-name {
   font-size: 14px;
-  color: #303133;
+  color: #fff;
   font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  margin-left: 5px;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #606266;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 10px 16px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #409eff, #67c23a, #409eff);
   transition: all 0.3s ease;
-  padding: 8px 12px;
-  border-radius: 6px;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.router-link-active::after {
+  width: 80%;
 }
 
 .nav-link:hover {
-  color: #409eff;
-  background: #ecf5ff;
+  color: #fff;
+  background: rgba(64, 158, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .nav-link.router-link-active {
-  color: #409eff;
-  background: #ecf5ff;
+  color: #fff;
+  background: rgba(64, 158, 255, 0.2);
 }
 
-/* 移动端顶部导航栏 */
+.nav-link .el-icon {
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .el-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(64, 158, 255, 0.8));
+}
+
 .mobile-header {
-  background: #fff;
-  border-bottom: 1px solid #e4e7ed;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: none; /* PC端隐藏 */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  display: none;
   flex-shrink: 0;
   position: sticky;
   top: 0;
@@ -333,29 +452,44 @@ watch(() => route.path, (newPath, oldPath) => {
 .mobile-page-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: #fff;
   flex: 1;
+  text-shadow: 0 0 10px rgba(64, 158, 255, 0.5);
 }
 
 .main-content {
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
-/* 底部导航栏 */
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 60px;
-  background: #fff;
-  border-top: 1px solid #e4e7ed;
+  background: rgba(20, 20, 40, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 0 8px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 4px);
+}
+
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(64, 158, 255, 0.5), transparent);
 }
 
 .nav-item {
@@ -363,39 +497,99 @@ watch(() => route.path, (newPath, oldPath) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #909399;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 10px;
   transition: all 0.3s ease;
-  flex: 1;
+  flex: 0 0 25%;
   height: 100%;
+  max-width: 70px;
+  position: relative;
+}
+
+.nav-item .icon-wrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-item .el-icon {
   font-size: 24px;
-  margin-bottom: 4px;
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .nav-item.active {
   color: #409eff;
 }
 
-.nav-item:hover {
-  color: #409eff;
+.nav-item.active .el-icon {
+  transform: translateY(-2px) scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(64, 158, 255, 0.5)) drop-shadow(0 0 15px rgba(64, 158, 255, 0.4));
 }
 
-/* PC端优化 */
+.nav-item:hover {
+  color: #fff;
+}
+
+.nav-item:hover .el-icon {
+  transform: scale(1.1);
+}
+
+.nav-item:active {
+  transform: scale(0.95);
+}
+
+.nav-item .el-badge {
+  position: absolute !important;
+  top: 3px !important;
+  right: 1px !important;
+  transform: none !important;
+  font-size: 9px !important;
+  min-width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  padding: 0 3px !important;
+}
+
+.nav-item .el-badge :deep(.el-badge__content) {
+  font-size: 9px;
+  min-width: 14px;
+  height: 14px;
+  line-height: 14px;
+  padding: 0 3px;
+  background: linear-gradient(135deg, #f56c6c, #ff9a9e);
+  box-shadow: 0 2px 8px rgba(245, 108, 108, 0.5);
+}
+
 @media (min-width: 769px) {
   .top-nav {
-    display: block; /* PC端显示顶部导航 */
+    display: block;
+    animation: slideDown 0.5s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .mobile-header {
-    display: none; /* PC端隐藏移动端头部 */
+    display: none;
   }
 
   .bottom-nav {
-    display: none; /* PC端隐藏底部导航 */
+    display: none;
   }
 
   .main-content {
@@ -403,14 +597,27 @@ watch(() => route.path, (newPath, oldPath) => {
   }
 }
 
-/* 移动端优化 */
 @media (max-width: 768px) {
   .mobile-header {
-    display: block; /* 移动端显示顶部导航 */
+    display: block;
+    animation: slideDown 0.5s ease-out;
   }
 
   .main-content {
-    padding-bottom: 60px; /* 确保移动端有底部导航空间 */
+    padding-bottom: 65px;
+  }
+
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, #409eff, #67c23a);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 0 10px rgba(64, 158, 255, 0.6);
   }
 }
 </style>

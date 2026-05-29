@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ToolServiceImpl implements ToolService {
@@ -104,6 +106,38 @@ public class ToolServiceImpl implements ToolService {
     }
 
     @Override
+    public boolean batchSetPublic(List<Long> ids) {
+        Long userId = getCurrentUserId();
+        if (userId == null || ids == null || ids.isEmpty()) {
+            return false;
+        }
+        // 批量设置公开时，确保只能操作当前用户的数据
+        LambdaQueryWrapper<Tool> wrapper = new LambdaQueryWrapper<Tool>()
+                .in(Tool::getId, ids)
+                .eq(Tool::getUserId, userId);
+        
+        Tool tool = new Tool();
+        tool.setIsPublic(1);
+        return toolMapper.update(tool, wrapper) > 0;
+    }
+
+    @Override
+    public boolean batchSetPrivate(List<Long> ids) {
+        Long userId = getCurrentUserId();
+        if (userId == null || ids == null || ids.isEmpty()) {
+            return false;
+        }
+        // 批量设置私有时，确保只能操作当前用户的数据
+        LambdaQueryWrapper<Tool> wrapper = new LambdaQueryWrapper<Tool>()
+                .in(Tool::getId, ids)
+                .eq(Tool::getUserId, userId);
+        
+        Tool tool = new Tool();
+        tool.setIsPublic(0);
+        return toolMapper.update(tool, wrapper) > 0;
+    }
+
+    @Override
     public PageResult<ToolVO> getPublicTools(int pageNum, int pageSize, String keyword, String sortBy) {
         IPage<ToolVO> page = new Page<>(pageNum, pageSize);
         toolMapper.selectPublicToolPage(page, keyword, sortBy);
@@ -125,5 +159,33 @@ public class ToolServiceImpl implements ToolService {
         IPage<ToolVO> page = new Page<>(pageNum, pageSize);
         toolMapper.selectPublicToolPageByUser(page, userId);
         return PageResult.of(page);
+    }
+
+    @Override
+    public boolean setAllPublic() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<Tool> wrapper = new LambdaQueryWrapper<Tool>()
+                .eq(Tool::getUserId, userId);
+        
+        Tool tool = new Tool();
+        tool.setIsPublic(1);
+        return toolMapper.update(tool, wrapper) > 0;
+    }
+
+    @Override
+    public boolean setAllPrivate() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<Tool> wrapper = new LambdaQueryWrapper<Tool>()
+                .eq(Tool::getUserId, userId);
+        
+        Tool tool = new Tool();
+        tool.setIsPublic(0);
+        return toolMapper.update(tool, wrapper) > 0;
     }
 }

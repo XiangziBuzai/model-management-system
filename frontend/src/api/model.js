@@ -51,3 +51,37 @@ export function batchDeleteModels(ids) {
     data: ids
   })
 }
+
+// 批量设置模型为公开
+export function batchSetModelsPublic(ids) {
+  return request({
+    url: '/models/batch/public',
+    method: 'put',
+    data: ids
+  })
+}
+
+// 批量设置模型为私有
+export function batchSetModelsPrivate(ids) {
+  return request({
+    url: '/models/batch/private',
+    method: 'put',
+    data: ids
+  })
+}
+
+// 设置所有模型为公开
+export function setAllModelsPublic() {
+  return request({
+    url: '/models/all/public',
+    method: 'put'
+  })
+}
+
+// 设置所有模型为私有
+export function setAllModelsPrivate() {
+  return request({
+    url: '/models/all/private',
+    method: 'put'
+  })
+}

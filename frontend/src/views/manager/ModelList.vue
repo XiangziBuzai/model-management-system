@@ -70,24 +70,33 @@
             <el-option label="公开" :value="1" />
           </el-select>
         </el-form-item>
+          <div class="public-switch-container">
+            <span class="switch-label">全部公开:</span>
+            <el-switch 
+              v-model="allPublic" 
+              @change="handleAllPublicChange"
+              active-text="公开"
+              inactive-text="私有"
+            />
+          </div>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
+          <el-button type="primary" @click="handleSearch" class="cool-button">
             <el-icon><Search /></el-icon>
             搜索
           </el-button>
-          <el-button @click="handleReset">
+          <el-button @click="handleReset" class="cool-button">
             <el-icon><Refresh /></el-icon>
             重置
           </el-button>
-          <el-button type="success" @click="handleAdd">
+          <el-button type="success" @click="handleAdd" class="cool-button">
             <el-icon><Plus /></el-icon>
             新增
           </el-button>
-          <el-button type="warning" @click="handleExport">
+          <el-button type="warning" @click="handleExport" class="cool-button">
             <el-icon><Download /></el-icon>
             导出
           </el-button>
-          <el-button type="danger" @click="handleBatchDelete" :disabled="selectedIds.length === 0" class="batch-delete-btn">
+          <el-button type="danger" @click="handleBatchDelete" :disabled="selectedIds.length === 0" class="batch-delete-btn cool-button">
             <el-icon><Delete /></el-icon>
             批量删除
           </el-button>
@@ -138,7 +147,11 @@
             <span class="price-text">¥{{ row.price }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="remark" label="备注" min-width="200">
+          <template #default="{ row }">
+            <div class="remark-cell" v-html="formatRemark(row.remark)"></div>
+          </template>
+        </el-table-column>
         <el-table-column prop="sold" label="是否售出" width="100" align="center">
           <template #default="{ row }">
             <el-tag 
@@ -164,11 +177,11 @@
         <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <el-button-group>
-              <el-button type="primary" size="small" @click="handleEdit(row)">
+              <el-button type="primary" size="small" @click="handleEdit(row)" class="cool-button">
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
-              <el-button type="danger" size="small" @click="handleDelete(row)">
+              <el-button type="danger" size="small" @click="handleDelete(row)" class="cool-button">
                 <el-icon><Delete /></el-icon>
                 删除
               </el-button>
@@ -222,11 +235,11 @@
             </div>
           </div>
           <div class="card-actions">
-            <el-button type="primary" size="small" @click="handleEdit(item)">
+            <el-button type="primary" size="small" @click="handleEdit(item)" class="cool-button">
               <el-icon><Edit /></el-icon>
               <span>编辑</span>
             </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(item)">
+            <el-button type="danger" size="small" @click="handleDelete(item)" class="cool-button">
               <el-icon><Delete /></el-icon>
               <span>删除</span>
             </el-button>
@@ -337,7 +350,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels } from '../../api/model'
+import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels, batchSetModelsPublic, batchSetModelsPrivate, setAllModelsPublic, setAllModelsPrivate } from '../../api/model';
 import { useManufacturerStore } from '../../stores/useManufacturerStore'
 import { addManufacturer } from '../../api/manufacturer'
 import * as XLSX from 'xlsx'
@@ -363,6 +376,7 @@ const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
 const selectedIds = ref([])
+const allPublic = ref(false)
 
 // 对话框
 const dialogVisible = ref(false)
@@ -400,6 +414,19 @@ async function loadData() {
     const result = await getModelList(queryParams)
     tableData.value = result.records || []
     total.value = result.total || 0
+    
+    // 检查是否所有模型都是公开的（仅在不分页或当前显示所有数据时有效）
+    // 这里简化处理,如果有数据且所有数据都是公开的,则设为true
+    if (tableData.value.length > 0) {
+      const allPublicData = tableData.value.every(item => item.isPublic === 1);
+      const allPrivateData = tableData.value.every(item => item.isPublic === 0);
+      // 如果数据不全是公开也不全是私有,则保持原样
+      if (allPublicData) {
+        allPublic.value = true;
+      } else if (allPrivateData) {
+        allPublic.value = false;
+      }
+    }
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -550,6 +577,47 @@ async function handleBatchDelete() {
   }
 }
 
+// 设置所有模型的公开/私有状态
+async function handleAllPublicChange(value) {
+  try {
+    if (value) {
+      await ElMessageBox.confirm(
+        '确定要将所有模型设为公开吗？',
+        '全部设为公开',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+      await setAllModelsPublic()
+      ElMessage.success('成功将所有模型设为公开')
+    } else {
+      await ElMessageBox.confirm(
+        '确定要将所有模型设为私有吗？',
+        '全部设为私有',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+      await setAllModelsPrivate()
+      ElMessage.success('成功将所有模型设为私有')
+    }
+    loadData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('设置公开/私有失败:', error)
+      // 恢复开关状态
+      allPublic.value = !value
+    } else {
+      // 用户取消操作,恢复开关状态
+      allPublic.value = !value
+    }
+  }
+}
+
 // 选择变化
 function handleSelectionChange(selection) {
   selectedIds.value = selection.map(item => item.id)
@@ -666,9 +734,6 @@ async function handleExport() {
       '模型名称': item.name,
       '价格': item.price,
       '是否售出': item.sold === 1 ? '已售出' : '未售出',
-      '备注': item.remark || '',
-      '创建时间': item.createdAt ? new Date(item.createdAt).toLocaleString('zh-CN') : '',
-      '更新时间': item.updatedAt ? new Date(item.updatedAt).toLocaleString('zh-CN') : ''
     }))
 
     // 创建工作簿
@@ -751,18 +816,31 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 搜索卡片样式 */
+/* 搜索卡片样式 - 炫酷效果 */
 .search-card {
   margin: 20px;
   border-radius: 12px;
   border: none;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 表格卡片样式 */
+.search-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 40px rgba(64, 158, 255, 0.2),
+    0 0 30px rgba(64, 158, 255, 0.1);
+}
+
+/* 表格卡片样式 - 炫酷效果 */
 .table-card {
   margin:0 20px;
   border-radius: 12px;
   border: none;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 厂家文本样式 */
@@ -818,22 +896,55 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-/* 移动端卡片列表 */
+/* 表格行炫酷效果 */
+:deep(.el-table__row) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+:deep(.el-table__row:hover) {
+  background: linear-gradient(90deg, rgba(64, 158, 255, 0.1), rgba(103, 194, 58, 0.05)) !important;
+  transform: scale(1.01);
+}
+
+/* 移动端卡片列表 - 炫酷效果 */
 .mobile-cards {
   display: none;
 }
 
 .model-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 0 30px rgba(64, 158, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.model-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(64, 158, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.model-card:hover::before {
+  left: 100%;
 }
 
 .model-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(64, 158, 255, 0.2),
+    0 0 40px rgba(64, 158, 255, 0.15);
 }
 
 .model-card .card-header {
@@ -1135,6 +1246,19 @@ onMounted(() => {
   text-decoration: underline;
 }
 
+/* 公开开关容器样式 */
+.public-switch-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-label {
+  font-size: 14px;
+  color: #606266;
+}
+
+
 /* 确保 el-upload 组件可点击 */
 :deep(.avatar-uploader .el-upload) {
   width: 100%;
@@ -1164,5 +1288,19 @@ onMounted(() => {
 .cover-placeholder {
   font-size: 24px;
   color: #c0c4cc;
+}
+
+/* 备注单元格样式 */
+.remark-cell {
+  max-height: 100px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.remark-cell img {
+  max-width: 100%;
+  max-height: 80px;
+  border-radius: 4px;
+  margin: 4px 0;
 }
 </style>

@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Box, CircleCheck } from '@element-plus/icons-vue'
@@ -120,6 +120,7 @@ import { useAuthStore } from '../stores/useAuthStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const showWelcomeGuide = inject('showWelcomeGuide')
 
 const loginFormRef = ref(null)
 const loading = ref(false)
@@ -167,7 +168,9 @@ async function handleLogin() {
     try {
       await authStore.login(loginForm)
       ElMessage.success('登录成功')
-      // 根据选择跳转到不同页面
+      if (showWelcomeGuide) {
+        setTimeout(() => showWelcomeGuide(), 100)
+      }
       if (entryType.value === 'square') {
         router.push('/square/home')
       } else {
@@ -175,7 +178,6 @@ async function handleLogin() {
       }
     } catch (error) {
       console.error('登录失败:', error)
-      // 添加用户友好的错误提示
       ElMessage.error(error.message || '登录失败，请检查用户名和密码')
     } finally {
       loading.value = false
@@ -362,7 +364,7 @@ function goToRegister() {
 }
 
 .brand-icon-wrapper {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   animation: brand-icon-float 3s ease-in-out infinite;
 }
 
@@ -468,6 +470,7 @@ function goToRegister() {
 
 /* 输入框包装器 - 流光边框效果 */
 .input-wrapper {
+  width: 95%;
   position: relative;
   border-radius: 12px;
   padding: 2px;
@@ -708,7 +711,7 @@ function goToRegister() {
   }
 
   .brand-icon-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
 
   .brand-icon {
@@ -721,7 +724,7 @@ function goToRegister() {
 
   .brand-slogan {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
   }
 
   .brand-features {

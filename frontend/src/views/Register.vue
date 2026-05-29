@@ -52,9 +52,9 @@
             :rules="registerRules"
             class="register-form fade-in-up"
             style="animation-delay: 0.4s"
-            label-width="80px"
+            label-position="top"
           >
-            <el-form-item label="用户名" prop="username">
+            <el-form-item prop="username">
               <div class="input-wrapper">
                 <el-input
                   v-model="registerForm.username"
@@ -64,7 +64,7 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="密码" prop="password">
+            <el-form-item prop="password">
               <div class="input-wrapper">
                 <el-input
                   v-model="registerForm.password"
@@ -76,7 +76,7 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="确认密码" prop="confirmPassword">
+            <el-form-item prop="confirmPassword">
               <div class="input-wrapper">
                 <el-input
                   v-model="registerForm.confirmPassword"
@@ -88,7 +88,7 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="昵称" prop="nickname">
+            <el-form-item prop="nickname">
               <div class="input-wrapper">
                 <el-input
                   v-model="registerForm.nickname"
@@ -411,7 +411,6 @@ function goToLogin() {
 }
 
 .brand-icon-wrapper {
-  margin-bottom: 10px;
   animation: brand-icon-float 3s ease-in-out infinite;
 }
 
@@ -513,6 +512,31 @@ function goToLogin() {
 
 .register-form {
   margin-top: 20px;
+  width: 100%;
+}
+
+.register-form :deep(.el-form-item) {
+  width: 100%;
+}
+
+.register-form :deep(.el-form-item__content) {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.register-form :deep(.el-input) {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
+.register-form :deep(.el-input__wrapper) {
+  width: 100% !important;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* 输入框包装器 - 流光边框效果 */
@@ -522,6 +546,9 @@ function goToLogin() {
   padding: 2px;
   background: transparent;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .input-wrapper::before {
@@ -636,8 +663,11 @@ function goToLogin() {
 }
 
 .register-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  margin-top: 24px;
+  margin-bottom: 12px;
   font-size: 14px;
   color: #606266;
   animation: fade-in-up 0.8s ease-out 0.6s both;
@@ -692,16 +722,14 @@ function goToLogin() {
 /* 平板端适配 */
 @media (max-width: 1024px) {
   .register-wrapper {
-    margin:100px 20px;
+    margin: 60px 20px;
     flex-direction: column;
     max-width: 600px;
   }
-  .register-btn {
-    width: 70%;
-  }
+
   .brand-section {
     padding: 0;
-    min-height: 200px;
+    min-height: 180px;
   }
 
   .brand-title {
@@ -726,6 +754,10 @@ function goToLogin() {
   .form-section {
     padding: 40px 30px;
   }
+
+  .register-form :deep(.el-input__wrapper) {
+    width: 100%;
+  }
 }
 
 /* 移动端适配 */
@@ -733,38 +765,32 @@ function goToLogin() {
   .register-container {
     padding: 0;
   }
-  .register-btn {
-    width: 70%;
-  }
+
   .register-header {
     margin: 0;
   }
 
   .register-wrapper {
     border-radius: 20px;
-    margin:100px 20px;
+    margin: 60px 12px;
   }
 
   .brand-section {
     padding: 0;
-    min-height: 200px;
-  }
-
-  .brand-icon-wrapper {
-    margin-bottom: 20px;
+    min-height: 180px;
   }
 
   .brand-icon {
-    font-size: 60px !important;
+    font-size: 50px !important;
   }
 
   .brand-title {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .brand-slogan {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .brand-features {
@@ -772,15 +798,24 @@ function goToLogin() {
   }
 
   .form-section {
-    padding: 30px 20px;
+    padding: 2px 16px;
   }
 
   .register-header h2 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
-  .register-form :deep(.el-form-item) {
-    margin-bottom: 18px;
+  /* .register-form :deep(.el-form-item) {
+    margin-bottom: 16px;
+  } */
+
+  .register-form :deep(.el-form-item__label) {
+    font-size: 14px;
+    padding-bottom: 6px;
+  }
+
+  .register-form :deep(.el-input__wrapper) {
+    padding: 10px 14px;
   }
 
   .gradient-orb {
@@ -790,7 +825,6 @@ function goToLogin() {
 
   .input-wrapper :deep(.el-input__wrapper) {
     padding: 10px 14px;
-    width: 250px !important;
   }
 }
 
@@ -798,7 +832,7 @@ function goToLogin() {
 @media (max-width: 480px) {
   .brand-section {
     padding: 0;
-    min-height: 200px;
+    min-height: 170px;
   }
 
   .brand-title {
@@ -806,7 +840,11 @@ function goToLogin() {
   }
 
   .form-section {
-    padding: 24px 16px;
+    padding: 2px 16px;
+  }
+
+  .register-header {
+    margin-bottom: -16px;
   }
 
   .register-header h2 {

@@ -54,6 +54,15 @@
             <el-option label="公开" :value="1" />
           </el-select>
         </el-form-item>
+           <div class="public-switch-container">
+            <span class="switch-label">全部公开:</span>
+            <el-switch 
+              v-model="allPublic" 
+              @change="handleAllPublicChange"
+              active-text="公开"
+              inactive-text="私有"
+            />
+          </div>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
@@ -111,7 +120,11 @@
             <span class="price-text">¥{{ row.price }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="remark" label="备注" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="remark" label="备注" min-width="200">
+          <template #default="{ row }">
+            <div class="remark-cell" v-html="formatRemark(row.remark)"></div>
+          </template>
+        </el-table-column>
         <el-table-column prop="sold" label="是否售出" width="100" align="center">
           <template #default="{ row }">
             <el-tag 
@@ -289,7 +302,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getToolList, addTool, updateTool, deleteTool } from '../../api/tool'
+import { getToolList, addTool, updateTool, deleteTool, setAllToolsPublic, setAllToolsPrivate } from '../../api/tool'
 import * as XLSX from 'xlsx'
 import { Tools, Search, Refresh, Plus, Download, Edit, Delete, Picture } from '@element-plus/icons-vue'
 import RichEditor from '../../components/RichEditor.vue'
@@ -309,6 +322,8 @@ const queryParams = reactive({
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
+const selectedIds = ref([])
+const allPublic = ref(false)
 
 // 对话框
 const dialogVisible = ref(false)
@@ -342,6 +357,19 @@ async function loadData() {
     const result = await getToolList(queryParams)
     tableData.value = result.records || []
     total.value = result.total || 0
+    
+    // 检查是否所有工具都是公开的（仅在不分页或当前显示所有数据时有效）
+    // 这里简化处理,如果有数据且所有数据都是公开的,则设为true
+    if (tableData.value.length > 0) {
+      const allPublicData = tableData.value.every(item => item.isPublic === 1);
+      const allPrivateData = tableData.value.every(item => item.isPublic === 0);
+      // 如果数据不全是公开也不全是私有,则保持原样
+      if (allPublicData) {
+        allPublic.value = true;
+      } else if (allPrivateData) {
+        allPublic.value = false;
+      }
+    }
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -469,6 +497,47 @@ async function handleDelete(row) {
   }
 }
 
+// 设置所有工具的公开/私有状态
+async function handleAllPublicChange(value) {
+  try {
+    if (value) {
+      await ElMessageBox.confirm(
+        '确定要将所有工具设为公开吗？',
+        '全部设为公开',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+      await setAllToolsPublic()
+      ElMessage.success('成功将所有工具设为公开')
+    } else {
+      await ElMessageBox.confirm(
+        '确定要将所有工具设为私有吗？',
+        '全部设为私有',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+      await setAllToolsPrivate()
+      ElMessage.success('成功将所有工具设为私有')
+    }
+    loadData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('设置公开/私有失败:', error)
+      // 恢复开关状态
+      allPublic.value = !value
+    } else {
+      // 用户取消操作,恢复开关状态
+      allPublic.value = !value
+    }
+  }
+}
+
 // 提交表单
 async function handleSubmit() {
   if (!formRef.value) return
@@ -555,7 +624,6 @@ async function handleExport() {
       '工具名称': item.name,
       '价格': item.price,
       '是否售出': item.sold === 1 ? '已售出' : '未售出',
-      '备注': item.remark || ''
     }))
 
     // 创建工作簿
@@ -1009,5 +1077,31 @@ onMounted(() => {
 .cover-placeholder {
   font-size: 24px;
   color: #c0c4cc;
+}
+
+/* 备注单元格样式 */
+.remark-cell {
+  max-height: 100px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.remark-cell img {
+  max-width: 100%;
+  max-height: 80px;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+/* 公开开关容器样式 */
+.public-switch-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.switch-label {
+  font-size: 14px;
+  color: #606266;
 }
 </style>

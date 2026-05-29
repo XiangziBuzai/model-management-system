@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "工具管理")
 @RestController
 @RequestMapping("/api/tools")
@@ -51,5 +53,35 @@ public class ToolController {
     @DeleteMapping("/{id}")
     public Result<Boolean> delete(@PathVariable Long id) {
         return Result.success(toolService.delete(id));
+    }
+
+    @Operation(summary = "批量设置工具为公开")
+    @PutMapping("/batch/public")
+    public Result<Boolean> batchSetPublic(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error(400, "请选择要设为公开的工具");
+        }
+        return Result.success(toolService.batchSetPublic(ids));
+    }
+
+    @Operation(summary = "批量设置工具为私有")
+    @PutMapping("/batch/private")
+    public Result<Boolean> batchSetPrivate(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error(400, "请选择要设为私有的工具");
+        }
+        return Result.success(toolService.batchSetPrivate(ids));
+    }
+
+    @Operation(summary = "设置当前用户所有工具为公开")
+    @PutMapping("/all/public")
+    public Result<Boolean> setAllPublic() {
+        return Result.success(toolService.setAllPublic());
+    }
+
+    @Operation(summary = "设置当前用户所有工具为私有")
+    @PutMapping("/all/private")
+    public Result<Boolean> setAllPrivate() {
+        return Result.success(toolService.setAllPrivate());
     }
 }

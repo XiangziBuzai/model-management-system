@@ -332,107 +332,248 @@ onMounted(() => {
 <style scoped>
 .my-orders {
   min-height: 100vh;
-  background: #f5f7fa;
-  padding: 16px;
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.my-orders::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(64, 158, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 100%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.my-orders > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(64, 158, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(64, 158, 255, 0.6);
+  }
 }
 
 .tab-bar {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.tab-bar :deep(.el-radio-button__inner) {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tab-bar :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.4), rgba(64, 158, 255, 0.2));
+  border-color: rgba(64, 158, 255, 0.5);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(64, 158, 255, 0.4);
 }
 
 .order-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .order-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: slideUp 0.5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.order-card:nth-child(1) { animation-delay: 0.05s; }
+.order-card:nth-child(2) { animation-delay: 0.1s; }
+.order-card:nth-child(3) { animation-delay: 0.15s; }
+.order-card:nth-child(4) { animation-delay: 0.2s; }
+.order-card:nth-child(5) { animation-delay: 0.25s; }
+
+.order-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3), 0 0 25px rgba(64, 158, 255, 0.2);
+  border-color: rgba(64, 158, 255, 0.3);
 }
 
 .order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .order-no {
   font-size: 14px;
-  color: #606266;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.order-header :deep(.el-tag) {
+  border-radius: 12px;
+  padding: 4px 12px;
+  border: none;
+  font-weight: 500;
 }
 
 .order-body {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .item-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 .item-type {
-  background: #409eff;
+  background: linear-gradient(135deg, #409eff, #67c23a);
   color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px 14px;
+  border-radius: 12px;
   font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(64, 158, 255, 0.3);
 }
 
 .item-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .order-price {
-  font-size: 20px;
-  font-weight: 700;
-  color: #f56c6c;
-  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f56c6c, #ff9a9e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 2px 4px rgba(245, 108, 108, 0.3));
 }
 
 .order-time, .order-remark {
   font-size: 14px;
-  color: #909399;
-  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 6px;
 }
 
 .order-actions {
   display: flex;
   justify-content: flex-end;
-  padding-top: 12px;
-  border-top: 1px solid #ebeef5;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 12px;
+}
+
+.order-actions .el-button {
+  border-radius: 16px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.order-actions .el-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.order-actions .el-button--primary {
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.4), rgba(64, 158, 255, 0.2));
+  border-color: rgba(64, 158, 255, 0.5);
+}
+
+.order-actions .el-button--primary:hover {
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.6), rgba(64, 158, 255, 0.4));
+  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.4);
+}
+
+.order-actions .el-button--success {
+  background: linear-gradient(135deg, rgba(103, 194, 58, 0.4), rgba(103, 194, 58, 0.2));
+  border-color: rgba(103, 194, 58, 0.5);
+}
+
+.order-actions .el-button--success:hover {
+  background: linear-gradient(135deg, rgba(103, 194, 58, 0.6), rgba(103, 194, 58, 0.4));
+  box-shadow: 0 4px 20px rgba(103, 194, 58, 0.4);
+}
+
+.order-actions .el-button--danger {
+  background: linear-gradient(135deg, rgba(245, 108, 108, 0.4), rgba(245, 108, 108, 0.2));
+  border-color: rgba(245, 108, 108, 0.5);
+}
+
+.order-actions .el-button--danger:hover {
+  background: linear-gradient(135deg, rgba(245, 108, 108, 0.6), rgba(245, 108, 108, 0.4));
+  box-shadow: 0 4px 20px rgba(245, 108, 108, 0.4);
 }
 
 .empty-state {
-  padding: 40px 0;
+  padding: 60px 0;
+}
+
+.empty-state :deep(.el-empty__description) {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .load-more {
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .shipping-info {
-  margin-top: 12px;
-  padding: 12px;
-  background: #f5f7fa;
-  border-radius: 8px;
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .shipping-item {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 14px;
 }
 
@@ -441,18 +582,36 @@ onMounted(() => {
 }
 
 .shipping-item .label {
-  color: #606266;
-  min-width: 80px;
+  color: rgba(255, 255, 255, 0.5);
+  min-width: 90px;
 }
 
 .shipping-item .value {
-  color: #303133;
-  font-weight: 500;
+  color: #fff;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
   .my-orders {
-    padding: 12px;
+    padding: 14px;
+  }
+
+  .order-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .order-price {
+    font-size: 20px;
+  }
+
+  .order-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .order-actions .el-button {
+    width: 100%;
   }
 }
 </style>

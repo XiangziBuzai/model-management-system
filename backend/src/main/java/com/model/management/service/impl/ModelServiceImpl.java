@@ -133,6 +133,38 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
+    public boolean batchSetPublic(List<Long> ids) {
+        Long userId = getCurrentUserId();
+        if (userId == null || ids == null || ids.isEmpty()) {
+            return false;
+        }
+        // 批量设置公开时，确保只能操作当前用户的数据
+        LambdaQueryWrapper<Model> wrapper = new LambdaQueryWrapper<Model>()
+                .in(Model::getId, ids)
+                .eq(Model::getUserId, userId);
+        
+        Model model = new Model();
+        model.setIsPublic(1);
+        return modelMapper.update(model, wrapper) > 0;
+    }
+
+    @Override
+    public boolean batchSetPrivate(List<Long> ids) {
+        Long userId = getCurrentUserId();
+        if (userId == null || ids == null || ids.isEmpty()) {
+            return false;
+        }
+        // 批量设置私有时，确保只能操作当前用户的数据
+        LambdaQueryWrapper<Model> wrapper = new LambdaQueryWrapper<Model>()
+                .in(Model::getId, ids)
+                .eq(Model::getUserId, userId);
+        
+        Model model = new Model();
+        model.setIsPublic(0);
+        return modelMapper.update(model, wrapper) > 0;
+    }
+
+    @Override
     public PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy) {
         Page<ModelVO> page = new Page<>(pageNum, pageSize);
         modelMapper.selectPublicModelVOPage(page, keyword, sortBy);
@@ -154,5 +186,33 @@ public class ModelServiceImpl implements ModelService {
         Page<ModelVO> page = new Page<>(pageNum, pageSize);
         modelMapper.selectPublicModelVOPageByUser(page, userId);
         return PageResult.of(page);
+    }
+
+    @Override
+    public boolean setAllPublic() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<Model> wrapper = new LambdaQueryWrapper<Model>()
+                .eq(Model::getUserId, userId);
+        
+        Model model = new Model();
+        model.setIsPublic(1);
+        return modelMapper.update(model, wrapper) > 0;
+    }
+
+    @Override
+    public boolean setAllPrivate() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            return false;
+        }
+        LambdaQueryWrapper<Model> wrapper = new LambdaQueryWrapper<Model>()
+                .eq(Model::getUserId, userId);
+        
+        Model model = new Model();
+        model.setIsPublic(0);
+        return modelMapper.update(model, wrapper) > 0;
     }
 }

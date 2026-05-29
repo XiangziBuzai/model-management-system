@@ -118,7 +118,7 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   
   // 设置页面标题
-  document.title = to.meta.title ? `${to.meta.title} - 模型管理系统` : '模型管理系统'
+  document.title = to.meta.title ? `${to.meta.title} - Model Share` : 'Model Share'
   
   // 检查是否需要认证
   if (to.meta.requiresAuth !== false) {

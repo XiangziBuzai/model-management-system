@@ -165,34 +165,121 @@ onMounted(() => {
 <style scoped>
 .messages {
   min-height: 100vh;
-  background: #f5f7fa;
-  padding: 16px;
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.messages::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(120, 119, 198, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 119, 198, 0.15) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.messages > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(64, 158, 255, 0.3), 0 0 10px rgba(64, 158, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(64, 158, 255, 0.5), 0 0 30px rgba(64, 158, 255, 0.3);
+  }
 }
 
 .conversation-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .conversation-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 18px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.4s ease-out;
+  animation-fill-mode: backwards;
+}
+
+.conversation-item:nth-child(1) { animation-delay: 0.05s; }
+.conversation-item:nth-child(2) { animation-delay: 0.1s; }
+.conversation-item:nth-child(3) { animation-delay: 0.15s; }
+.conversation-item:nth-child(4) { animation-delay: 0.2s; }
+.conversation-item:nth-child(5) { animation-delay: 0.25s; }
+
+.conversation-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(64, 158, 255, 0.1) 0%, transparent 50%, rgba(255, 119, 198, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.conversation-item:hover::before {
+  opacity: 1;
 }
 
 .conversation-item:hover {
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(8px) scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(64, 158, 255, 0.2);
+  border-color: rgba(64, 158, 255, 0.3);
 }
 
 .avatar {
   flex-shrink: 0;
+}
+
+.avatar :deep(.el-avatar) {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(64, 158, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 15px rgba(64, 158, 255, 0.2);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #fff;
+}
+
+.conversation-item:hover .avatar :deep(.el-avatar) {
+  transform: scale(1.1) rotate(5deg);
+  border-color: rgba(64, 158, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 25px rgba(64, 158, 255, 0.4);
 }
 
 .content {
@@ -210,22 +297,35 @@ onMounted(() => {
 .nickname {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease;
+}
+
+.conversation-item:hover .nickname {
+  color: #409eff;
+  text-shadow: 0 0 10px rgba(64, 158, 255, 0.5);
 }
 
 .time {
   font-size: 12px;
-  color: #909399;
+  color: rgba(255, 255, 255, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .message-preview {
   font-size: 14px;
-  color: #606266;
+  color: rgba(255, 255, 255, 0.6);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
   min-width: 0;
+  transition: color 0.3s ease;
+}
+
+.conversation-item:hover .message-preview {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .message-row {
@@ -236,21 +336,66 @@ onMounted(() => {
 
 .unread-badge {
   flex-shrink: 0;
-  margin-left: 8px;
+  margin-left: 10px;
+}
+
+.unread-badge :deep(.el-badge__content) {
+  background: linear-gradient(135deg, #f56c6c, #ff9a9e);
+  border: none;
+  box-shadow: 0 2px 10px rgba(245, 108, 108, 0.4);
+  animation: pulseGlow 2s infinite;
 }
 
 .empty-state {
-  padding: 40px 0;
+  padding: 60px 0;
+}
+
+.empty-state :deep(.el-empty__description) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.empty-state :deep(.el-empty__image) {
+  filter: drop-shadow(0 0 20px rgba(64, 158, 255, 0.3));
 }
 
 .load-more {
   text-align: center;
-  padding: 20px 0;
+  padding: 24px 0;
+}
+
+.load-more .el-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 12px 30px;
+  transition: all 0.3s ease;
+}
+
+.load-more .el-button:hover {
+  background: rgba(64, 158, 255, 0.2);
+  border-color: rgba(64, 158, 255, 0.5);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(64, 158, 255, 0.3);
 }
 
 @media (max-width: 768px) {
   .messages {
-    padding: 12px;
+    padding: 14px;
+  }
+
+  .conversation-item {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .nickname {
+    font-size: 15px;
+  }
+
+  .message-preview {
+    font-size: 13px;
   }
 }
 </style>

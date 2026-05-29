@@ -66,4 +66,34 @@ public class ModelController {
         }
         return Result.success(modelService.batchDelete(ids));
     }
+
+    @Operation(summary = "批量设置模型为公开")
+    @PutMapping("/batch/public")
+    public Result<Boolean> batchSetPublic(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error(400, "请选择要设为公开的模型");
+        }
+        return Result.success(modelService.batchSetPublic(ids));
+    }
+
+    @Operation(summary = "批量设置模型为私有")
+    @PutMapping("/batch/private")
+    public Result<Boolean> batchSetPrivate(@RequestBody List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error(400, "请选择要设为私有的模型");
+        }
+        return Result.success(modelService.batchSetPrivate(ids));
+    }
+
+    @Operation(summary = "设置当前用户所有模型为公开")
+    @PutMapping("/all/public")
+    public Result<Boolean> setAllPublic() {
+        return Result.success(modelService.setAllPublic());
+    }
+
+    @Operation(summary = "设置当前用户所有模型为私有")
+    @PutMapping("/all/private")
+    public Result<Boolean> setAllPrivate() {
+        return Result.success(modelService.setAllPrivate());
+    }
 }
