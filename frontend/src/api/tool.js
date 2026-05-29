@@ -34,3 +34,11 @@ export function deleteTool(id) {
     method: 'delete'
   })
 }
+
+// 获取单个工具详情
+export function getToolById(id) {
+  return request({
+    url: `/tools/${id}`,
+    method: 'get'
+  })
+}

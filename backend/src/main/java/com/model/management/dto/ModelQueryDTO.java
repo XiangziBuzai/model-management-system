@@ -13,6 +13,7 @@ public class ModelQueryDTO {
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private Integer sold;
+    private Integer isPublic;
     
     /**
      * 用户ID(用于数据隔离)

@@ -22,4 +22,9 @@ public interface UserService {
      * 修改密码
      */
     void changePassword(PasswordChangeDTO passwordChangeDTO);
+
+    /**
+     * 获取指定用户公开信息
+     */
+    UserProfileVO getUserPublicProfile(Long userId);
 }

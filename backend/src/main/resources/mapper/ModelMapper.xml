@@ -5,12 +5,19 @@
 
     <resultMap id="ModelVOMap" type="com.model.management.vo.ModelVO">
         <id     column="id"                property="id"/>
+        <result column="user_id"           property="userId"/>
+        <result column="username"          property="username"/>
+        <result column="nickname"          property="nickname"/>
         <result column="manufacturer_id"   property="manufacturerId"/>
         <result column="manufacturer_name" property="manufacturerName"/>
         <result column="name"              property="name"/>
         <result column="price"             property="price"/>
         <result column="remark"            property="remark"/>
         <result column="sold"              property="sold"/>
+        <result column="is_public"         property="isPublic"/>
+        <result column="view_count"        property="viewCount"/>
+        <result column="favorite_count"    property="favoriteCount"/>
+        <result column="cover"             property="cover"/>
         <result column="created_at"        property="createdAt"/>
         <result column="updated_at"        property="updatedAt"/>
     </resultMap>
@@ -26,16 +33,24 @@
     <select id="selectModelVOPage" resultMap="ModelVOMap">
         SELECT
             m.id,
+            m.user_id,
+            u.username,
+            u.nickname,
             m.manufacturer_id,
             mf.name AS manufacturer_name,
             m.name,
             m.price,
             m.remark,
             m.sold,
+            m.is_public,
+            m.view_count,
+            m.favorite_count,
+            m.cover,
             m.created_at,
             m.updated_at
         FROM model m
         LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        LEFT JOIN user u ON m.user_id = u.id
         WHERE m.deleted = 0
         <if test="dto.userId != null">
             AND m.user_id = #{dto.userId}
@@ -55,6 +70,9 @@
         <if test="dto.sold != null">
             AND m.sold = #{dto.sold}
         </if>
+        <if test="dto.isPublic != null">
+            AND m.is_public = #{dto.isPublic}
+        </if>
         ORDER BY m.created_at DESC
     </select>
 
@@ -73,6 +91,114 @@
         </if>
         GROUP BY m.manufacturer_id, mf.name
         ORDER BY model_count DESC
+    </select>
+
+    <!-- 查询公开模型列表（广场使用） -->
+    <select id="selectPublicModelVOPage" resultMap="ModelVOMap">
+        SELECT
+            m.id,
+            m.user_id,
+            u.username,
+            u.nickname,
+            m.manufacturer_id,
+            mf.name AS manufacturer_name,
+            m.name,
+            m.price,
+            m.remark,
+            m.sold,
+            m.view_count,
+            m.favorite_count,
+            m.cover,
+            m.created_at,
+            m.updated_at
+        FROM model m
+        LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        LEFT JOIN user u ON m.user_id = u.id
+        WHERE m.deleted = 0
+          AND m.is_public = 1
+          AND m.sold = 0
+        <if test="keyword != null and keyword != ''">
+            AND (m.name LIKE CONCAT('%', #{keyword}, '%')
+                 OR m.remark LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <choose>
+            <when test="sortBy != null and sortBy == 'hot'">
+                ORDER BY m.view_count DESC
+            </when>
+            <otherwise>
+                ORDER BY m.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询公开模型详情（广场使用） -->
+    <select id="selectPublicModelVOById" resultMap="ModelVOMap">
+        SELECT
+            m.id,
+            m.user_id,
+            u.username,
+            u.nickname,
+            m.manufacturer_id,
+            mf.name AS manufacturer_name,
+            m.name,
+            m.price,
+            m.remark,
+            m.sold,
+            m.view_count,
+            m.favorite_count,
+            m.cover,
+            m.created_at,
+            m.updated_at
+        FROM model m
+        LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        LEFT JOIN user u ON m.user_id = u.id
+        WHERE m.deleted = 0
+          AND m.is_public = 1
+          AND m.sold = 0
+          AND m.id = #{id}
+    </select>
+
+    <!-- 更新收藏数 -->
+    <update id="updateFavoriteCount">
+        UPDATE model
+        SET favorite_count = favorite_count + #{delta}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新浏览量（+1） -->
+    <update id="incrementViewCount">
+        UPDATE model
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 查询指定用户的公开模型列表 -->
+    <select id="selectPublicModelVOPageByUser" resultMap="ModelVOMap">
+        SELECT
+            m.id,
+            m.user_id,
+            u.username,
+            u.nickname,
+            m.manufacturer_id,
+            mf.name AS manufacturer_name,
+            m.name,
+            m.price,
+            m.remark,
+            m.sold,
+            m.is_public,
+            m.view_count,
+            m.favorite_count,
+            m.cover,
+            m.created_at,
+            m.updated_at
+        FROM model m
+        LEFT JOIN manufacturer mf ON m.manufacturer_id = mf.id AND mf.deleted = 0
+        LEFT JOIN user u ON m.user_id = u.id
+        WHERE m.deleted = 0
+          AND m.user_id = #{userId}
+          AND m.is_public = 1
+          AND m.sold = 0
+        ORDER BY m.created_at DESC
     </select>
 
 </mapper>

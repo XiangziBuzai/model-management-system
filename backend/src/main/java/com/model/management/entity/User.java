@@ -50,6 +50,11 @@ public class User {
     private String avatar;
 
     /**
+     * 是否公开收藏列表: 0-私密, 1-公开
+     */
+    private Integer isPublicFavorite;
+
+    /**
      * 账号状态: 0-禁用, 1-正常
      */
     private Integer status;

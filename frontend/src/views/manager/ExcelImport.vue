@@ -119,7 +119,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { importExcel, downloadModelTemplate, downloadToolTemplate } from '../api/excel'
+import { importExcel, downloadModelTemplate, downloadToolTemplate } from '../../api/excel'
 
 const importType = ref('model')
 const selectedFile = ref(null)

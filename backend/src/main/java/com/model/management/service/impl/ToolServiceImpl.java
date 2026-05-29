@@ -1,6 +1,7 @@
 package com.model.management.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.model.management.common.PageResult;
 import com.model.management.dto.ToolQueryDTO;
@@ -8,6 +9,7 @@ import com.model.management.dto.ToolSaveDTO;
 import com.model.management.entity.Tool;
 import com.model.management.mapper.ToolMapper;
 import com.model.management.service.ToolService;
+import com.model.management.vo.ToolVO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,7 +64,9 @@ public class ToolServiceImpl implements ToolService {
         tool.setName(dto.getName().trim());
         tool.setPrice(dto.getPrice());
         tool.setRemark(dto.getRemark());
+        tool.setCover(dto.getCover());
         tool.setSold(dto.getSold() != null ? dto.getSold() : 0);
+        tool.setIsPublic(dto.getIsPublic() != null ? dto.getIsPublic() : 0);
         tool.setUserId(userId); // 设置用户ID
         toolMapper.insert(tool);
         return tool;
@@ -80,7 +84,9 @@ public class ToolServiceImpl implements ToolService {
         tool.setName(dto.getName().trim());
         tool.setPrice(dto.getPrice());
         tool.setRemark(dto.getRemark());
+        tool.setCover(dto.getCover());
         tool.setSold(dto.getSold() != null ? dto.getSold() : 0);
+        tool.setIsPublic(dto.getIsPublic() != null ? dto.getIsPublic() : 0);
         toolMapper.updateById(tool);
         return tool;
     }
@@ -95,5 +101,29 @@ public class ToolServiceImpl implements ToolService {
         );
         if (tool == null) return false;
         return toolMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public PageResult<ToolVO> getPublicTools(int pageNum, int pageSize, String keyword, String sortBy) {
+        IPage<ToolVO> page = new Page<>(pageNum, pageSize);
+        toolMapper.selectPublicToolPage(page, keyword, sortBy);
+        return PageResult.of(page);
+    }
+
+    @Override
+    public ToolVO getPublicToolById(Long id) {
+        return toolMapper.selectPublicToolVOById(id);
+    }
+
+    @Override
+    public void incrementViewCount(Long id) {
+        toolMapper.incrementViewCount(id);
+    }
+
+    @Override
+    public PageResult<ToolVO> getPublicToolsByUser(Long userId, int pageNum, int pageSize) {
+        IPage<ToolVO> page = new Page<>(pageNum, pageSize);
+        toolMapper.selectPublicToolPageByUser(page, userId);
+        return PageResult.of(page);
     }
 }

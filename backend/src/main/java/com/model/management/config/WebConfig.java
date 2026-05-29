@@ -21,12 +21,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 添加JWT拦截器，排除登录注册接口和Swagger文档
+        // 添加JWT拦截器，排除登录注册接口、文件上传接口和Swagger文档
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
                         "/api/auth/login",
                         "/api/auth/register",
+                        "/api/upload/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger-resources/**"
@@ -37,6 +38,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置静态资源访问路径
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadPath.substring(0, uploadPath.lastIndexOf("/")) + "/");
+                .addResourceLocations("file:" + uploadPath + "/");
     }
 }

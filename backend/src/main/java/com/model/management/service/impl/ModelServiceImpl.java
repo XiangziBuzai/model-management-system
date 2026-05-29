@@ -63,7 +63,9 @@ public class ModelServiceImpl implements ModelService {
         vo.setName(model.getName());
         vo.setPrice(model.getPrice());
         vo.setRemark(model.getRemark());
+        vo.setCover(model.getCover());
         vo.setSold(model.getSold());
+        vo.setIsPublic(model.getIsPublic());
         vo.setCreatedAt(model.getCreatedAt());
         vo.setUpdatedAt(model.getUpdatedAt());
         return vo;
@@ -77,7 +79,9 @@ public class ModelServiceImpl implements ModelService {
         model.setName(dto.getName().trim());
         model.setPrice(dto.getPrice());
         model.setRemark(dto.getRemark());
+        model.setCover(dto.getCover());
         model.setSold(dto.getSold() != null ? dto.getSold() : 0);
+        model.setIsPublic(dto.getIsPublic() != null ? dto.getIsPublic() : 0);
         model.setUserId(userId); // 设置用户ID
         modelMapper.insert(model);
         return getById(model.getId());
@@ -96,7 +100,9 @@ public class ModelServiceImpl implements ModelService {
         model.setName(dto.getName().trim());
         model.setPrice(dto.getPrice());
         model.setRemark(dto.getRemark());
+        model.setCover(dto.getCover());
         model.setSold(dto.getSold() != null ? dto.getSold() : 0);
+        model.setIsPublic(dto.getIsPublic() != null ? dto.getIsPublic() : 0);
         modelMapper.updateById(model);
         return getById(id);
     }
@@ -124,5 +130,29 @@ public class ModelServiceImpl implements ModelService {
                 .in(Model::getId, ids)
                 .eq(Model::getUserId, userId);
         return modelMapper.delete(wrapper) > 0;
+    }
+
+    @Override
+    public PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy) {
+        Page<ModelVO> page = new Page<>(pageNum, pageSize);
+        modelMapper.selectPublicModelVOPage(page, keyword, sortBy);
+        return PageResult.of(page);
+    }
+
+    @Override
+    public ModelVO getPublicModelById(Long id) {
+        return modelMapper.selectPublicModelVOById(id);
+    }
+
+    @Override
+    public void incrementViewCount(Long id) {
+        modelMapper.incrementViewCount(id);
+    }
+
+    @Override
+    public PageResult<ModelVO> getPublicModelsByUser(Long userId, int pageNum, int pageSize) {
+        Page<ModelVO> page = new Page<>(pageNum, pageSize);
+        modelMapper.selectPublicModelVOPageByUser(page, userId);
+        return PageResult.of(page);
     }
 }

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Layout from '../views/Layout.vue'
+import Layout from '../views/manager/Layout.vue'
 
 const routes = [
   // 登录页面
@@ -16,6 +16,57 @@ const routes = [
     component: () => import('../views/Register.vue'),
     meta: { title: '注册', requiresAuth: false }
   },
+  // 模型广场布局路由
+  {
+    path: '/square',
+    component: () => import('../views/ModelSquare/SquareLayout.vue'),
+    redirect: '/square/home',
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'home',
+        name: 'SquareHome',
+        component: () => import('../views/ModelSquare/SquareHome.vue'),
+        meta: { title: '模型广场', keepAlive: true }
+      },
+      {
+        path: 'detail/:type/:id',
+        name: 'SquareDetail',
+        component: () => import('../views/ModelSquare/SquareDetail.vue'),
+        meta: { title: '详情' }
+      },
+      {
+        path: 'messages',
+        name: 'Messages',
+        component: () => import('../views/ModelSquare/Messages.vue'),
+        meta: { title: '消息' }
+      },
+      {
+        path: 'chat/:userId',
+        name: 'Chat',
+        component: () => import('../views/ModelSquare/Chat.vue'),
+        meta: { title: '聊天' }
+      },
+      {
+        path: 'orders',
+        name: 'MyOrders',
+        component: () => import('../views/ModelSquare/MyOrders.vue'),
+        meta: { title: '我的订单' }
+      },
+      {
+        path: 'profile',
+        name: 'MyProfile',
+        component: () => import('../views/ModelSquare/MyProfile.vue'),
+        meta: { title: '我的' }
+      },
+      {
+        path: 'user/:userId',
+        name: 'UserProfile',
+        component: () => import('../views/ModelSquare/UserProfile.vue'),
+        meta: { title: '用户主页' }
+      }
+    ]
+  },
   // 主布局路由
   {
     path: '/',
@@ -26,31 +77,31 @@ const routes = [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import('../views/Dashboard.vue'),
+        component: () => import('../views/manager/Dashboard.vue'),
         meta: { title: '数据统计' }
       },
       {
         path: 'models',
         name: 'ModelList',
-        component: () => import('../views/ModelList.vue'),
+        component: () => import('../views/manager/ModelList.vue'),
         meta: { title: '模型管理' }
       },
       {
         path: 'tools',
         name: 'ToolList',
-        component: () => import('../views/ToolList.vue'),
+        component: () => import('../views/manager/ToolList.vue'),
         meta: { title: '工具管理' }
       },
       {
         path: 'import',
         name: 'ExcelImport',
-        component: () => import('../views/ExcelImport.vue'),
+        component: () => import('../views/manager/ExcelImport.vue'),
         meta: { title: 'Excel 导入' }
       },
       {
         path: 'profile',
         name: 'Profile',
-        component: () => import('../views/Profile.vue'),
+        component: () => import('../views/manager/Profile.vue'),
         meta: { title: '个人信息' }
       }
     ]

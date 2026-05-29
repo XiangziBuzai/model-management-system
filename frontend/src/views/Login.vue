@@ -1,64 +1,112 @@
 <template>
   <div class="login-container">
-    <!-- 动态背景粒子效果 -->
-    <div class="particles">
-      <div v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+    <!-- 动态流体渐变背景 -->
+    <div class="gradient-bg">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
     </div>
 
-    <div class="login-box">
-      <div class="login-header">
-        <div class="icon-wrapper">
-          <el-icon :size="48" color="#409EFF" class="floating-icon"><Box /></el-icon>
+    <!-- 粒子效果层 -->
+    <div class="particles">
+      <div v-for="i in 30" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+    </div>
+
+    <!-- PC端左右分栏布局 -->
+    <div class="login-wrapper">
+      <!-- 左侧品牌展示区 -->
+      <div class="brand-section">
+        <div class="brand-content">
+            <div class="brand-icon-wrapper">
+              <el-icon :size="80" color="#fff" class="brand-icon"><Box /></el-icon>
+            </div>
+            <h1 class="brand-title">ModelSphere</h1>
+            <p class="brand-slogan">AI驱动 · 智能协作 · 无限可能</p>
+          <div class="brand-features">
+            <div class="feature-item">
+              <el-icon><CircleCheck /></el-icon>
+              <span>多模型统一管理</span>
+            </div>
+            <div class="feature-item">
+              <el-icon><CircleCheck /></el-icon>
+              <span>可视化数据分析</span>
+            </div>
+            <div class="feature-item">
+              <el-icon><CircleCheck /></el-icon>
+              <span>安全权限控制</span>
+            </div>
+          </div>
         </div>
-        <h1 class="fade-in-up" style="animation-delay: 0.2s">模型管理系统</h1>
-        <p class="fade-in-up" style="animation-delay: 0.3s">欢迎登录</p>
       </div>
 
-      <el-form
-        ref="loginFormRef"
-        :model="loginForm"
-        :rules="loginRules"
-        class="login-form fade-in-up"
-        style="animation-delay: 0.4s"
-      >
-        <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-            size="large"
-          />
-        </el-form-item>
+      <!-- 右侧表单区域 -->
+      <div class="form-section">
+        <div class="login-box">
+          <div class="login-header">
+            <h2 class="fade-in-up" style="animation-delay: 0.2s">欢迎登录</h2>
+          </div>
 
-        <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            size="large"
-            show-password
-            @keyup.enter="handleLogin"
-          />
-        </el-form-item>
-
-        <el-form-item>
-          <el-button
-            type="primary"
-            size="large"
-            style="width: 100%"
-            :loading="loading"
-            @click="handleLogin"
+          <el-form
+            ref="loginFormRef"
+            :model="loginForm"
+            :rules="loginRules"
+            class="login-form fade-in-up"
+            style="animation-delay: 0.4s"
           >
-            登录
-          </el-button>
-        </el-form-item>
+            <el-form-item prop="username">
+              <div class="input-wrapper">
+                <el-input
+                  v-model="loginForm.username"
+                  placeholder="请输入用户名"
+                  prefix-icon="User"
+                  size="large"
+                />
+              </div>
+            </el-form-item>
 
-        <div class="login-footer">
-          <span>还没有账号？</span>
-          <el-link type="primary" @click="goToRegister">立即注册</el-link>
+            <el-form-item prop="password">
+              <div class="input-wrapper">
+                <el-input
+                  v-model="loginForm.password"
+                  type="password"
+                  placeholder="请输入密码"
+                  prefix-icon="Lock"
+                  size="large"
+                  show-password
+                  @keyup.enter="handleLogin"
+                />
+              </div>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button
+                type="primary"
+                size="large"
+                class="login-btn glow-effect"
+                :loading="loading"
+                @click="handleLogin"
+              >
+                <span class="btn-text">登 录</span>
+              </el-button>
+            </el-form-item>
+
+            <el-form-item>
+              <div class="entry-selection">
+                <span>登录后进入：</span>
+                <el-radio-group v-model="entryType" size="small">
+                  <el-radio label="square">模型广场</el-radio>
+                  <el-radio label="admin">个人管理后台</el-radio>
+                </el-radio-group>
+              </div>
+            </el-form-item>
+
+            <div class="login-footer">
+              <span>还没有账号？</span>
+              <el-link type="primary" class="register-link" @click="goToRegister">立即注册</el-link>
+            </div>
+          </el-form>
         </div>
-      </el-form>
+      </div>
     </div>
   </div>
 </template>
@@ -67,7 +115,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Box } from '@element-plus/icons-vue'
+import { Box, CircleCheck } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/useAuthStore'
 
 const router = useRouter()
@@ -75,6 +123,7 @@ const authStore = useAuthStore()
 
 const loginFormRef = ref(null)
 const loading = ref(false)
+const entryType = ref('square')
 
 const loginForm = reactive({
   username: '',
@@ -118,7 +167,12 @@ async function handleLogin() {
     try {
       await authStore.login(loginForm)
       ElMessage.success('登录成功')
-      router.push('/dashboard')
+      // 根据选择跳转到不同页面
+      if (entryType.value === 'square') {
+        router.push('/square/home')
+      } else {
+        router.push('/dashboard')
+      }
     } catch (error) {
       console.error('登录失败:', error)
       // 添加用户友好的错误提示
@@ -140,12 +194,71 @@ function goToRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
+  background: #0f0c29;
 }
 
-/* 粒子背景动画 */
+/* 动态流体渐变背景 */
+.gradient-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  animation: float-orb 20s infinite ease-in-out;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  bottom: -150px;
+  right: -150px;
+  animation-delay: -7s;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+}
+
+@keyframes float-orb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+/* 粒子效果增强 */
 .particles {
   position: absolute;
   width: 100%;
@@ -153,50 +266,54 @@ function goToRegister() {
   overflow: hidden;
   top: 0;
   left: 0;
+  z-index: 1;
 }
 
 .particle {
   position: absolute;
   bottom: -10px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   animation: float-up infinite linear;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 @keyframes float-up {
   0% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0) rotate(0deg) scale(1);
     opacity: 0;
   }
   10% {
     opacity: 1;
   }
   90% {
-    opacity: 1;
+    opacity: 0.8;
   }
   100% {
-    transform: translateY(-100vh) rotate(720deg);
+    transform: translateY(-100vh) rotate(720deg) scale(0.5);
     opacity: 0;
   }
 }
 
-/* 登录框样式 */
-.login-box {
-  width: 420px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  animation: slide-in 0.6s ease-out;
+/* 左右分栏布局 */
+.login-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 550px;
   position: relative;
   z-index: 10;
+  margin: 100px 200px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: container-slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes slide-in {
+@keyframes container-slide-in {
   from {
     opacity: 0;
-    transform: translateY(-30px) scale(0.95);
+    transform: translateY(40px) scale(0.95);
   }
   to {
     opacity: 1;
@@ -204,73 +321,143 @@ function goToRegister() {
   }
 }
 
-/* 图标包装器 */
-.icon-wrapper {
-  display: inline-block;
-  animation: bounce-in 0.8s ease-out;
+/* 左侧品牌展示区 */
+.brand-section {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
+.brand-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotate-bg 30s linear infinite;
 }
 
-/* 浮动图标动画 */
-.floating-icon {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* 淡入上移动画 */
-.fade-in-up {
-  animation: fadeInUp 0.6s ease-out both;
-}
-
-@keyframes fadeInUp {
+@keyframes rotate-bg {
   from {
-    opacity: 0;
-    transform: translateY(20px);
+    transform: rotate(0deg);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
+}
+
+.brand-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+}
+
+.brand-icon-wrapper {
+  margin-bottom: 30px;
+  animation: brand-icon-float 3s ease-in-out infinite;
+}
+
+@keyframes brand-icon-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+  }
+}
+
+.brand-icon {
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+.brand-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fade-in-up 0.8s ease-out 0.3s both;
+}
+
+.brand-slogan {
+  font-size: 18px;
+  opacity: 0.95;
+  margin: 0 0 40px 0;
+  letter-spacing: 2px;
+  animation: fade-in-up 0.8s ease-out 0.4s both;
+}
+
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fade-in-up 0.8s ease-out 0.5s both;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateX(10px);
+}
+
+.feature-item .el-icon {
+  font-size: 20px;
+}
+
+/* 右侧表单区域 */
+.form-section {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  padding: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 登录框样式优化 */
+.login-box {
+  width: 100%;
+  max-width: 420px;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
 }
 
-.login-header h1 {
-  font-size: 28px;
+.login-header h2 {
+  font-size: 32px;
   color: #303133;
-  margin: 16px 0 8px;
-  font-weight: 600;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .login-header p {
-  font-size: 14px;
+  font-size: 15px;
   color: #909399;
   margin: 0;
 }
@@ -279,79 +466,303 @@ function goToRegister() {
   margin-top: 20px;
 }
 
-/* 输入框动画 */
-.login-form :deep(.el-input) {
-  transition: all 0.3s ease;
+/* 输入框包装器 - 流光边框效果 */
+.input-wrapper {
+  position: relative;
+  border-radius: 12px;
+  padding: 2px;
+  background: transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.login-form :deep(.el-input__wrapper) {
-  transition: all 0.3s ease;
-  box-shadow: 0 0 0 1px #dcdfe6 inset;
+.input-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #c0c4cc inset;
+.input-wrapper:focus-within::before {
+  opacity: 1;
+  animation: border-glow 2s linear infinite;
 }
 
-.login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #409eff inset;
-  transform: scale(1.02);
+@keyframes border-glow {
+  0%, 100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(30deg);
+  }
 }
 
-/* 按钮波纹效果 */
-.login-form :deep(.el-button--primary) {
+.input-wrapper :deep(.el-input__wrapper) {
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #fff;
+}
+
+.input-wrapper :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  transform: translateY(-2px);
+}
+
+.input-wrapper :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.input-wrapper :deep(.el-input__inner) {
+  font-size: 15px;
+}
+
+/* 按钮微交互效果 */
+.login-btn {
+  width: 100%;
+  height: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.login-form :deep(.el-button--primary:hover) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
-.login-form :deep(.el-button--primary:active) {
-  transform: translateY(0);
+.login-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.login-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.login-btn:active {
+  transform: translateY(-1px);
+}
+
+.glow-effect {
+  animation: button-glow 2s ease-in-out infinite;
+}
+
+@keyframes button-glow {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
 }
 
 .login-footer {
   text-align: center;
-  margin-top: 16px;
+  margin-top: 24px;
   font-size: 14px;
   color: #606266;
-  animation: fadeInUp 0.6s ease-out 0.5s both;
+  animation: fade-in-up 0.8s ease-out 0.6s both;
 }
 
-.login-footer .el-link {
+.entry-selection {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.entry-selection span {
+  white-space: nowrap;
+}
+
+.register-link {
   margin-left: 8px;
+  font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.login-footer .el-link:hover {
+.register-link:hover {
   transform: translateX(3px);
+  text-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+/* 淡入上移动画 */
+.fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* PC端优化 */
-@media (min-width: 769px) {
-  .login-box {
-    width: 420px;
-    padding: 40px;
+@media (min-width: 1025px) {
+  .login-wrapper {
+    margin: 100px 200px;
   }
 
-  .login-header h1 {
-    font-size: 28px;
+  .brand-section {
+    padding: 80px 60px;
+  }
+
+  .brand-title {
+    font-size: 48px;
+  }
+
+  .form-section {
+    padding: 80px 60px;
+  }
+}
+
+/* 平板端适配 */
+@media (max-width: 1024px) {
+  .login-wrapper {
+    margin: 20px;
+    flex-direction: column;
+    max-width: 600px;
+    min-height: auto;
+  }
+
+  .brand-section {
+    padding: 30px 30px;
+    min-height: 300px;
+  }
+
+  .brand-title {
+    font-size: 32px;
+  }
+
+  .brand-slogan {
+    font-size: 16px;
+  }
+
+  .brand-features {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .feature-item {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .form-section {
+    padding: 40px 30px;
   }
 }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
-  .login-box {
-    width: 90%;
-    padding: 30px 20px;
-    margin: 20px;
+  .login-container {
+    padding: 0;
   }
 
-  .login-header h1 {
+  .login-wrapper {
+    margin: 20px;
+    border-radius: 20px;
+  }
+
+  .brand-section {
+    padding: 30px 20px;
+    min-height: 250px;
+  }
+
+  .brand-icon-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .brand-icon {
+    font-size: 60px !important;
+  }
+
+  .brand-title {
+    font-size: 28px;
+  }
+
+  .brand-slogan {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .brand-features {
+    display: none;
+  }
+
+  .form-section {
+    padding: 30px 20px;
+  }
+
+  .login-header h2 {
+    font-size: 26px;
+  }
+
+  .gradient-orb {
+    filter: blur(60px);
+    opacity: 0.5;
+  }
+
+  .input-wrapper :deep(.el-input__wrapper) {
+    padding: 10px 14px;
+    width: 350px !important;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .brand-section {
+    padding: 24px 16px;
+    min-height: 200px;
+  }
+
+  .brand-title {
+    font-size: 24px;
+  }
+
+  .form-section {
+    padding: 24px 16px;
+  }
+
+  .login-header h2 {
     font-size: 24px;
   }
 
@@ -359,25 +770,14 @@ function goToRegister() {
     font-size: 13px;
   }
 
-  /* 移动端减少粒子数量以提升性能 */
-  .particle:nth-child(n+11) {
-    display: none;
-  }
-}
-
-/* 小屏幕手机 */
-@media (max-width: 480px) {
-  .login-box {
-    width: 95%;
-    padding: 25px 15px;
+  .input-wrapper :deep(.el-input__wrapper) {
+    padding: 10px 14px;
+    width: 100%;
   }
 
-  .login-header h1 {
-    font-size: 22px;
-  }
-
-  .icon-wrapper {
-    transform: scale(0.9);
+  .login-btn {
+    height: 46px;
+    font-size: 15px;
   }
 }
 </style>

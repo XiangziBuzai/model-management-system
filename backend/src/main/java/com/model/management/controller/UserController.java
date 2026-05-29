@@ -54,4 +54,15 @@ public class UserController {
             return Result.error(400, e.getMessage());
         }
     }
+
+    @Operation(summary = "获取指定用户公开信息")
+    @GetMapping("/public/{userId}")
+    public Result<UserProfileVO> getUserPublicProfile(@PathVariable Long userId) {
+        try {
+            UserProfileVO profile = userService.getUserPublicProfile(userId);
+            return Result.success(profile);
+        } catch (Exception e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
 }

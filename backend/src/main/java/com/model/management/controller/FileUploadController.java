@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequestMapping("/api/upload")
 public class FileUploadController {
 
-    @Value("${file.upload.path:uploads/avatars}")
+    @Value("${file.upload.path:uploads}")
     private String uploadPath;
 
     @Value("${file.access.url:http://localhost:8080/uploads}")
@@ -31,6 +31,28 @@ public class FileUploadController {
     @Operation(summary = "上传头像")
     @PostMapping("/avatar")
     public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        return uploadFile(file, "avatars");
+    }
+
+    @Operation(summary = "上传封面")
+    @PostMapping("/cover")
+    public Result<String> uploadCover(@RequestParam("file") MultipartFile file) {
+        return uploadFile(file, "covers");
+    }
+
+    @Operation(summary = "通用文件上传")
+    @PostMapping
+    public Result<String> upload(@RequestParam("file") MultipartFile file) {
+        return uploadFile(file, "files");
+    }
+
+    /**
+     * 文件上传通用方法
+     * @param file 文件
+     * @param subDir 子目录
+     * @return 文件访问URL
+     */
+    private Result<String> uploadFile(MultipartFile file, String subDir) {
         if (file.isEmpty()) {
             return Result.error(400, "请选择要上传的文件");
         }
@@ -65,7 +87,7 @@ public class FileUploadController {
             String fileName = UUID.randomUUID().toString() + extension;
 
             // 创建上传目录
-            Path uploadDir = Paths.get(uploadPath);
+            Path uploadDir = Paths.get(uploadPath, subDir);
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
@@ -75,7 +97,7 @@ public class FileUploadController {
             Files.copy(file.getInputStream(), filePath);
 
             // 返回访问URL
-            String fileUrl = accessUrl + "/avatars/" + fileName;
+            String fileUrl = accessUrl + "/" + subDir + "/" + fileName;
             return Result.success(fileUrl);
 
         } catch (IOException e) {

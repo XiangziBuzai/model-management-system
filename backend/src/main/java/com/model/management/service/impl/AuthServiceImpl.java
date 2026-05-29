@@ -99,7 +99,8 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        user.setEmail(registerDTO.getEmail());
+        // 邮箱为空时设置为null，避免违反唯一约束（MySQL允许多个NULL，但不允许多个空字符串）
+        user.setEmail(registerDTO.getEmail() != null && !registerDTO.getEmail().isEmpty() ? registerDTO.getEmail() : null);
         user.setPhone(registerDTO.getPhone());
         user.setNickname(registerDTO.getNickname() != null ? registerDTO.getNickname() : registerDTO.getUsername());
         user.setStatus(1); // 正常状态

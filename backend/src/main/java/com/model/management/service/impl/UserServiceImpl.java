@@ -90,6 +90,9 @@ public class UserServiceImpl implements UserService {
         if (updateDTO.getAvatar() != null) {
             user.setAvatar(updateDTO.getAvatar());
         }
+        if (updateDTO.getIsPublicFavorite() != null) {
+            user.setIsPublicFavorite(updateDTO.getIsPublicFavorite());
+        }
 
         userMapper.updateById(user);
         return convertToVO(user);
@@ -123,6 +126,20 @@ public class UserServiceImpl implements UserService {
         userMapper.updateById(user);
     }
 
+    @Override
+    public UserProfileVO getUserPublicProfile(Long userId) {
+        if (userId == null) {
+            throw new RuntimeException("用户ID不能为空");
+        }
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        return convertToVO(user);
+    }
+
     /**
      * 将User实体转换为UserProfileVO
      */
@@ -134,6 +151,7 @@ public class UserServiceImpl implements UserService {
         vo.setEmail(user.getEmail());
         vo.setPhone(user.getPhone());
         vo.setAvatar(user.getAvatar());
+        vo.setIsPublicFavorite(user.getIsPublicFavorite());
         vo.setCreatedAt(user.getCreatedAt());
         vo.setUpdatedAt(user.getUpdatedAt());
         return vo;

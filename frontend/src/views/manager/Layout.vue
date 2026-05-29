@@ -63,6 +63,10 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu>
+                <el-dropdown-item command="square">
+                  <el-icon><shop /></el-icon>
+                  模型广场
+                </el-dropdown-item>
                 <el-dropdown-item command="profile">
                   <el-icon><User /></el-icon>
                   个人信息
@@ -104,8 +108,20 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Box, DataAnalysis, Tools, Upload, Fold, Clock, ArrowDown, User, SwitchButton } from '@element-plus/icons-vue'
-import { useAuthStore } from '../stores/useAuthStore'
+import {
+  Box,
+  DataAnalysis,
+  Tools,
+  Upload,
+  Fold,
+  Clock,
+  ArrowDown,
+  User,
+  SwitchButton,
+  View,
+  Shop
+} from '@element-plus/icons-vue'
+import { useAuthStore } from '../../stores/useAuthStore'
 
 const route = useRoute()
 const router = useRouter()
@@ -164,7 +180,10 @@ onUnmounted(() => {
 
 // 处理下拉菜单命令
 async function handleCommand(command) {
-  if (command === 'profile') {
+  if (command === 'square') {
+    // 跳转到广场页面
+    router.push('/square')
+  } else if (command === 'profile') {
     // 跳转到个人信息页面
     router.push('/profile')
   } else if (command === 'logout') {
@@ -194,6 +213,8 @@ function handleTabClick(path) {
 <style scoped>
 .layout-container {
   height: 100vh;
+  overflow: hidden;
+  width: 100vw;
 }
 
 /* 侧边栏样式 */
@@ -368,6 +389,12 @@ function handleTabClick(path) {
   background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
   padding: 0;
   min-height: calc(100vh - 70px);
+  overflow-x: hidden;
+}
+
+/* 移动端底部导航 */
+.mobile-tabbar {
+  display: none;
 }
 
 /* 响应式适配 */
@@ -380,10 +407,6 @@ function handleTabClick(path) {
   .header {
     padding: 0 12px;
     height: 50px;
-  }
-  
-  .username {
-    display: none;
   }
   
   .breadcrumb {
@@ -410,6 +433,7 @@ function handleTabClick(path) {
   
   /* 移动端底部导航样式 */
   .mobile-tabbar {
+    display: flex;
     position: fixed;
     bottom: 0;
     left: 0;

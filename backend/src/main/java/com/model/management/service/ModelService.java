@@ -14,4 +14,25 @@ public interface ModelService {
     ModelVO update(Long id, ModelSaveDTO dto);
     boolean delete(Long id);
     boolean batchDelete(List<Long> ids);
+    
+    /**
+     * 分页查询公开模型列表（广场使用）
+     * @param sortBy 排序方式：newest-最新（默认），hot-最热
+     */
+    PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy);
+    
+    /**
+     * 获取公开模型详情（广场使用）
+     */
+    ModelVO getPublicModelById(Long id);
+    
+    /**
+     * 增加浏览量
+     */
+    void incrementViewCount(Long id);
+
+    /**
+     * 分页查询指定用户的公开模型列表
+     */
+    PageResult<ModelVO> getPublicModelsByUser(Long userId, int pageNum, int pageSize);
 }

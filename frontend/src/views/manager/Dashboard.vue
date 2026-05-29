@@ -19,11 +19,11 @@
         <el-card shadow="hover" class="stat-card tool-card">
           <div class="stat-item">
             <div class="stat-icon">
-              <el-icon :size="32"><Tools /></el-icon>
+              <el-icon :size="32"><Money /></el-icon>
             </div>
             <div class="stat-content">
-              <div class="stat-label">工具总数</div>
-              <div class="stat-value">{{ overview.toolCount || 0 }}</div>
+              <div class="stat-label">总金额</div>
+              <div class="stat-value">{{ overview.totalPrice || 0 }}</div>
             </div>
           </div>
         </el-card>
@@ -85,8 +85,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts'
-import { getOverview, getManufacturerStats, getPriceDistribution } from '../api/statistics'
-import { Box, Tools, Money, Coin, PieChart, Histogram } from '@element-plus/icons-vue'
+import { getOverview, getManufacturerStats, getPriceDistribution } from '../../api/statistics'
+import { Box, Money, Coin, PieChart, Histogram } from '@element-plus/icons-vue'
 
 const overview = ref({})
 const manufacturerChartRef = ref(null)
@@ -469,7 +469,7 @@ onMounted(() => {
   }
   
   .stats-cards {
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
   
   .stat-card {
@@ -501,7 +501,8 @@ onMounted(() => {
   }
   
   .charts {
-    margin-top: 12px;
+    margin-top: 6px;
+    gap: 10px;
   }
   
   .chart-container {
@@ -517,10 +518,11 @@ onMounted(() => {
 @media (max-width: 480px) {
   .dashboard {
     padding: 8px;
+    min-height: 0;
   }
-  
+
   .stats-cards {
-    margin-bottom: 10px;
+    margin-bottom: 0;
   }
   
   .stat-card {
@@ -550,6 +552,10 @@ onMounted(() => {
   
   .stat-icon .el-icon {
     font-size: 14px !important;
+  }
+
+  .charts{
+    gap: 10px;
   }
   
   .chart-container {

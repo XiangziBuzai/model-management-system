@@ -4,26 +4,89 @@
 <mapper namespace="com.model.management.mapper.ToolMapper">
 
     <!-- 分页+筛选查询工具 -->
-    <select id="selectToolPage" resultType="com.model.management.entity.Tool">
-        SELECT id, name, price, remark, sold, created_at, updated_at, user_id
-        FROM tool
-        WHERE deleted = 0
+    <select id="selectToolPage" resultType="com.model.management.vo.ToolVO">
+        SELECT t.id, t.name, t.price, t.remark, t.sold, t.is_public, t.view_count, t.favorite_count, t.cover, t.created_at, t.updated_at, t.user_id, u.username, u.nickname
+        FROM tool t
+        LEFT JOIN user u ON t.user_id = u.id
+        WHERE t.deleted = 0
         <if test="dto.userId != null">
-            AND user_id = #{dto.userId}
+            AND t.user_id = #{dto.userId}
         </if>
         <if test="dto.name != null and dto.name != ''">
-            AND name LIKE CONCAT('%', #{dto.name}, '%')
+            AND t.name LIKE CONCAT('%', #{dto.name}, '%')
         </if>
         <if test="dto.minPrice != null">
-            AND price &gt;= #{dto.minPrice}
+            AND t.price &gt;= #{dto.minPrice}
         </if>
         <if test="dto.maxPrice != null">
-            AND price &lt;= #{dto.maxPrice}
+            AND t.price &lt;= #{dto.maxPrice}
         </if>
         <if test="dto.sold != null">
-            AND sold = #{dto.sold}
+            AND t.sold = #{dto.sold}
         </if>
-        ORDER BY created_at DESC
+        <if test="dto.isPublic != null">
+            AND t.is_public = #{dto.isPublic}
+        </if>
+        ORDER BY t.created_at DESC
+    </select>
+
+    <!-- 查询公开工具列表（广场使用） -->
+    <select id="selectPublicToolPage" resultType="com.model.management.vo.ToolVO">
+        SELECT t.id, t.name, t.price, t.remark, t.sold, t.view_count, t.favorite_count, t.cover, t.created_at, t.updated_at, t.user_id, u.username, u.nickname
+        FROM tool t
+        LEFT JOIN user u ON t.user_id = u.id
+        WHERE t.deleted = 0
+          AND t.is_public = 1
+          AND t.sold = 0
+        <if test="keyword != null and keyword != ''">
+            AND (t.name LIKE CONCAT('%', #{keyword}, '%')
+                 OR t.remark LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <choose>
+            <when test="sortBy != null and sortBy == 'hot'">
+                ORDER BY t.view_count DESC
+            </when>
+            <otherwise>
+                ORDER BY t.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询公开工具详情（广场使用） -->
+    <select id="selectPublicToolVOById" resultType="com.model.management.vo.ToolVO">
+        SELECT t.id, t.name, t.price, t.remark, t.sold, t.view_count, t.favorite_count, t.cover, t.created_at, t.updated_at, t.user_id, u.username, u.nickname
+        FROM tool t
+        LEFT JOIN user u ON t.user_id = u.id
+        WHERE t.deleted = 0
+          AND t.is_public = 1
+          AND t.sold = 0
+          AND t.id = #{id}
+    </select>
+
+    <!-- 更新收藏数 -->
+    <update id="updateFavoriteCount">
+        UPDATE tool
+        SET favorite_count = favorite_count + #{delta}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新浏览量（+1） -->
+    <update id="incrementViewCount">
+        UPDATE tool
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 查询指定用户的公开工具列表 -->
+    <select id="selectPublicToolPageByUser" resultType="com.model.management.vo.ToolVO">
+        SELECT t.id, t.name, t.price, t.remark, t.sold, t.is_public, t.view_count, t.favorite_count, t.cover, t.created_at, t.updated_at, t.user_id, u.username, u.nickname
+        FROM tool t
+        LEFT JOIN user u ON t.user_id = u.id
+        WHERE t.deleted = 0
+          AND t.user_id = #{userId}
+          AND t.is_public = 1
+          AND t.sold = 0
+        ORDER BY t.created_at DESC
     </select>
 
 </mapper>

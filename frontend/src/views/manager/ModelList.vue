@@ -1,23 +1,14 @@
 <template>
   <div class="model-list-container">
-    <!-- 页面标题 -->
-    <!-- <div class="page-header">
-      <h2 class="page-title">
-        <el-icon><Box /></el-icon>
-        模型管理
-      </h2>
-      <p class="page-subtitle">管理系统中的所有模型数据</p>
-    </div> -->
-
     <!-- 搜索栏 -->
     <el-card class="search-card" shadow="hover">
       <el-form :inline="true" :model="queryParams">
-        <el-form-item label="厂家">
+        <el-form-item label-width="70" label="厂家">
           <el-select
             v-model="queryParams.manufacturerName"
             placeholder="请选择厂家"
             clearable
-            style="width: 180px"
+            class="responsive-select"
           >
             <el-option
               v-for="item in manufacturerStore.manufacturers"
@@ -27,44 +18,56 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="模型名称">
+        <el-form-item label-width="70" label="模型名称">
           <el-input
             v-model="queryParams.modelName"
             placeholder="请输入模型名称"
             clearable
-            style="width: 180px"
+            class="responsive-input"
           >
             <template #prefix>
               <el-icon><Search /></el-icon>
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="价格范围">
+        <el-form-item label-width="70" label="价格范围">
           <el-input-number
             v-model="queryParams.minPrice"
             :min="0"
             :precision="2"
             placeholder="最低价"
-            style="width: 130px"
+            style="margin-right: 2px"
+            class="responsive-price-input"
           />
-          <span style="margin: 0 8px">至</span>
+<!--          <span style="margin: 0 8px">至</span>-->
           <el-input-number
             v-model="queryParams.maxPrice"
             :min="0"
             :precision="2"
             placeholder="最高价"
-            style="width: 130px"
+            class="responsive-price-input"
           />
         </el-form-item>
-        <el-form-item label="是否售出">
+        <el-form-item label-width="70" label="是否售出">
           <el-select
             v-model="queryParams.sold"
             placeholder="请选择"
             clearable
-            style="width: 140px"
+            class="responsive-select"
           >
             <el-option label="未售出" :value="0" />
             <el-option label="已售出" :value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label-width="70" label="是否公开">
+          <el-select
+            v-model="queryParams.isPublic"
+            placeholder="公开的模型将出现在广场中"
+            clearable
+            class="responsive-select"
+          >
+            <el-option label="私有" :value="0" />
+            <el-option label="公开" :value="1" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -84,7 +87,7 @@
             <el-icon><Download /></el-icon>
             导出
           </el-button>
-          <el-button type="danger" @click="handleBatchDelete" :disabled="selectedIds.length === 0">
+          <el-button type="danger" @click="handleBatchDelete" :disabled="selectedIds.length === 0" class="batch-delete-btn">
             <el-icon><Delete /></el-icon>
             批量删除
           </el-button>
@@ -109,6 +112,17 @@
         <el-table-column prop="manufacturerName" label="厂家" width="150" show-overflow-tooltip>
           <template #default="{ row }">
             <span class="manufacturer-text">{{ row.manufacturerName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="封面" width="100" align="center">
+          <template #default="{ row }">
+            <img 
+              v-if="row.cover" 
+              :src="row.cover" 
+              class="cover-thumb" 
+              :alt="row.name"
+            />
+            <el-icon v-else class="cover-placeholder"><Picture /></el-icon>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="模型名称" min-width="200" show-overflow-tooltip>
@@ -136,6 +150,17 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="isPublic" label="是否公开" width="100" align="center">
+          <template #default="{ row }">
+            <el-tag 
+              :type="row.isPublic === 1 ? 'warning' : 'info'"
+              effect="dark"
+              size="small"
+            >
+              {{ row.isPublic === 1 ? '公开' : '私有' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <el-button-group>
@@ -156,6 +181,10 @@
       <div class="mobile-cards" v-loading="loading">
         <div v-for="item in tableData" :key="item.id" class="model-card">
           <div class="card-header">
+            <div class="card-cover">
+              <img v-if="item.cover" :src="item.cover" class="cover-img" :alt="item.name" />
+              <el-icon v-else class="cover-icon"><Picture /></el-icon>
+            </div>
             <div class="card-title">
               <el-icon class="model-icon"><Box /></el-icon>
               <span class="model-name">{{ item.name }}</span>
@@ -179,7 +208,17 @@
             </div>
             <div class="card-item" v-if="item.remark">
               <span class="label">备注：</span>
-              <span class="value">{{ item.remark }}</span>
+              <span class="value remark-content" v-html="formatRemark(item.remark)"></span>
+            </div>
+            <div class="card-item">
+              <span class="label">公开：</span>
+              <el-tag 
+                :type="item.isPublic === 1 ? 'warning' : 'info'"
+                effect="dark"
+                size="small"
+              >
+                {{ item.isPublic === 1 ? '公开' : '私有' }}
+              </el-tag>
             </div>
           </div>
           <div class="card-actions">
@@ -254,18 +293,34 @@
             style="width: 100%"
           />
         </el-form-item>
+        <el-form-item label="封面图片">
+          <div class="cover-upload">
+            <el-upload
+              class="avatar-uploader"
+              :show-file-list="false"
+              :http-request="handleCoverUpload"
+              :before-upload="beforeCoverUpload"
+              accept="image/*"
+            >
+              <img v-if="formData.cover" :src="formData.cover" class="cover-preview" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <span v-if="formData.cover" class="cover-remove" @click="removeCover">移除</span>
+          </div>
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="formData.remark"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入备注"
-          />
+          <RichEditor v-model="formData.remark" />
         </el-form-item>
         <el-form-item label="是否售出" prop="sold">
           <el-radio-group v-model="formData.sold">
             <el-radio :value="0">未售出</el-radio>
             <el-radio :value="1">已售出</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="是否公开" prop="isPublic">
+          <el-radio-group v-model="formData.isPublic">
+            <el-radio :value="0">私有</el-radio>
+            <el-radio :value="1">公开</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -282,11 +337,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels } from '../api/model'
-import { useManufacturerStore } from '../stores/useManufacturerStore'
-import { addManufacturer } from '../api/manufacturer'
+import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels } from '../../api/model'
+import { useManufacturerStore } from '../../stores/useManufacturerStore'
+import { addManufacturer } from '../../api/manufacturer'
 import * as XLSX from 'xlsx'
-import { Box, Search, Refresh, Plus, Download, Delete, Edit } from '@element-plus/icons-vue'
+import { Box, Search, Refresh, Plus, Download, Delete, Edit, Picture } from '@element-plus/icons-vue'
+import RichEditor from '../../components/RichEditor.vue'
 
 const manufacturerStore = useManufacturerStore()
 
@@ -298,7 +354,8 @@ const queryParams = reactive({
   modelName: '',
   minPrice: null,
   maxPrice: null,
-  sold: null
+  sold: null,
+  isPublic: null
 })
 
 // 表格数据
@@ -318,7 +375,9 @@ const formData = reactive({
   name: '',
   price: 0,
   remark: '',
-  sold: 0
+  cover: '',
+  sold: 0,
+  isPublic: 0
 })
 
 // 表单验证规则
@@ -363,7 +422,8 @@ function handleReset() {
     modelName: '',
     minPrice: null,
     maxPrice: null,
-    sold: null
+    sold: null,
+    isPublic: null
   })
   loadData()
 }
@@ -383,9 +443,72 @@ function handleEdit(row) {
     name: row.name,
     price: row.price,
     remark: row.remark,
-    sold: row.sold ?? 0
+    cover: row.cover || '',
+    sold: row.sold ?? 0,
+    isPublic: row.isPublic ?? 0
   })
   dialogVisible.value = true
+}
+
+// 封面上传处理
+async function handleCoverUpload(options) {
+  const { file, onSuccess, onError } = options
+  try {
+    const uploadData = new FormData()
+    uploadData.append('file', file)
+    
+    const response = await fetch('/api/upload/cover', {
+      method: 'POST',
+      body: uploadData,
+      headers: getUploadHeaders()
+    })
+    
+    const result = await response.json()
+    if (result.code === 200) {
+      const coverUrl = result.data
+      console.log('上传成功，封面URL:', coverUrl)
+      formData.cover = coverUrl
+      setTimeout(() => {
+        onSuccess(coverUrl, file)
+      }, 0)
+      ElMessage.success('封面上传成功')
+    } else {
+      onError(new Error(result.message || '上传失败'))
+      ElMessage.error(result.message || '上传失败')
+    }
+  } catch (error) {
+    onError(error)
+    ElMessage.error('上传失败：' + error.message)
+  }
+}
+
+// 封面上传前校验
+function beforeCoverUpload(file) {
+  const isImage = file.type.startsWith('image/')
+  if (!isImage) {
+    ElMessage.error('请上传图片文件')
+    return false
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB')
+    return false
+  }
+  return true
+}
+
+// 移除封面
+function removeCover() {
+  formData.cover = ''
+}
+
+// 获取上传请求头
+function getUploadHeaders() {
+  const token = localStorage.getItem('token')
+  if (token) {
+    return { 'Authorization': 'Bearer ' + token }
+  }
+  return {}
 }
 
 // 删除
@@ -490,7 +613,9 @@ function handleDialogClose() {
     name: '',
     price: 0,
     remark: '',
-    sold: 0
+    cover: '',
+    sold: 0,
+    isPublic: 0
   })
 }
 
@@ -578,6 +703,47 @@ async function handleExport() {
   }
 }
 
+// 格式化备注（转换图片标记为实际图片，限制显示长度）
+const formatRemark = (remark) => {
+  if (!remark) return ''
+  
+  const maxLength = 15 // 最大显示字符数
+  let text = remark
+  
+  // 先提取文本内容（移除图片标记）用于长度计算
+  const textOnly = remark.replace(/\[image:[^\]]+\]/g, '[图片]')
+  
+  // 如果文本过长，进行截断
+  if (textOnly.length > maxLength) {
+    let charsRemaining = maxLength
+    let result = ''
+    let i = 0
+    
+    while (i < text.length && charsRemaining > 0) {
+      if (text.slice(i).startsWith('[image:')) {
+        const endIndex = text.indexOf(']', i)
+        if (endIndex !== -1) {
+          const imgTag = text.slice(i, endIndex + 1)
+          result += imgTag
+          i = endIndex + 1
+          charsRemaining -= 4
+        } else {
+          break
+        }
+      } else {
+        result += text[i]
+        i++
+        charsRemaining--
+      }
+    }
+    
+    text = result + '...'
+  }
+  
+  // 将 [image:base64] 标记转换为 img 标签
+  return text.replace(/\[image:([^\]]+)\]/g, '<img src="$1" style="max-width: 100%; max-height: 80px; border-radius: 4px;"/>')
+}
+
 onMounted(() => {
   manufacturerStore.fetchManufacturers()
   loadData()
@@ -585,63 +751,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* .model-list-container {
-  padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-  min-height: calc(100vh - 60px);
-} */
-
-/* 页面标题样式 */
-.page-header {
-  margin-bottom: 24px;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  position: relative;
-  overflow: hidden;
-}
-
-.page-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, #409EFF, #79bbff);
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #303133;
-  margin: 0 0 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.page-title .el-icon {
-  color: #409EFF;
-  font-size: 28px;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: #909399;
-  margin: 0;
-}
-
 /* 搜索卡片样式 */
 .search-card {
-  margin-bottom: 20px;
+  margin: 20px;
   border-radius: 12px;
   border: none;
 }
 
 /* 表格卡片样式 */
 .table-card {
+  margin:0 20px;
   border-radius: 12px;
   border: none;
 }
@@ -671,6 +790,27 @@ onMounted(() => {
   font-size: 15px;
 }
 
+/* 响应式输入框和选择框 */
+.responsive-input,
+.responsive-select {
+  width: 180px;
+}
+
+.responsive-price-input {
+  width: 130px;
+}
+
+@media (max-width: 768px) {
+  .responsive-input,
+  .responsive-select {
+    width: 100%;
+  }
+  
+  .responsive-price-input {
+    width: 48%;
+  }
+}
+
 /* 分页样式 */
 .pagination-wrapper {
   margin-top: 20px;
@@ -698,11 +838,34 @@ onMounted(() => {
 
 .model-card .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid #f0f0f0;
+  gap: 12px;
+}
+
+.model-card .card-cover {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+}
+
+.model-card .cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.model-card .cover-icon {
+  font-size: 20px;
+  color: #c0c4cc;
 }
 
 .model-card .card-title {
@@ -803,14 +966,6 @@ onMounted(() => {
     padding: 12px;
   }
   
-  .page-header {
-    padding: 16px;
-  }
-  
-  .page-title {
-    font-size: 20px;
-  }
-  
   /* 搜索表单改为垂直布局 */
   :deep(.el-form--inline .el-form-item) {
     margin-right: 0;
@@ -824,11 +979,29 @@ onMounted(() => {
     width: 100% !important;
   }
   
-  /* 按钮组改为垂直排列 */
+  /* 价格范围输入框特殊处理 */
   :deep(.el-form-item__content) {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+  }
+  
+  /* 按钮组改为垂直排列 */
+  :deep(.el-form--inline .el-form-item:last-child .el-form-item__content) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+  
+  :deep(.el-form--inline .el-form-item:last-child .el-button) {
+    width: 100%;
+    margin: 0;
+  }
+  
+  /* 移动端隐藏批量删除按钮 */
+  .batch-delete-btn {
+    display: none !important;
   }
   
   /* 隐藏PC端表格，显示移动端卡片 */
@@ -843,18 +1016,44 @@ onMounted(() => {
   /* 分页优化 */
   .pagination-wrapper {
     justify-content: center;
+    padding: 16px 0;
   }
   
   :deep(.el-pagination) {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 8px;
   }
   
-  :deep(.el-pagination .el-pagination__sizes),
+  :deep(.el-pagination .el-pagination__total) {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  
+  :deep(.el-pagination .btn-prev),
+  :deep(.el-pagination .btn-next),
+  :deep(.el-pagination .el-pager li) {
+    min-width: 32px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 13px;
+  }
+  
+  :deep(.el-pagination .el-pagination__sizes) {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+    order: 1;
+  }
+  
   :deep(.el-pagination .el-pagination__jump) {
     width: 100%;
     text-align: center;
     margin-top: 8px;
+    order: 2;
   }
 }
 
@@ -876,5 +1075,94 @@ onMounted(() => {
   .price-text {
     font-size: 13px;
   }
+}
+
+/* 封面上传样式 */
+.cover-upload {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-uploader {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  border: 1px dashed #d9d9d9;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.avatar-uploader:hover {
+  border-color: #409eff;
+  background-color: #fafafa;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #c0c4cc;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
+}
+
+.cover-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.cover-remove {
+  position: absolute;
+  bottom: -24px;
+  left: 0;
+  color: #f56c6c;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cover-remove:hover {
+  text-decoration: underline;
+}
+
+/* 确保 el-upload 组件可点击 */
+:deep(.avatar-uploader .el-upload) {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+:deep(.avatar-uploader .el-upload input[type="file"]) {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* 封面缩略图样式 */
+.cover-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.cover-placeholder {
+  font-size: 24px;
+  color: #c0c4cc;
 }
 </style>

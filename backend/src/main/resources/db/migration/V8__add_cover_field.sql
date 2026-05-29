@@ -1,0 +1,3 @@
+-- 为模型表和工具表添加封面字段
+ALTER TABLE model ADD COLUMN cover VARCHAR(500) COMMENT '封面图片URL';
+ALTER TABLE tool ADD COLUMN cover VARCHAR(500) COMMENT '封面图片URL';

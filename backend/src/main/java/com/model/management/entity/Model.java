@@ -28,6 +28,26 @@ public class Model {
      */
     private Long userId;
 
+    /**
+     * 是否公开: 0-私有, 1-公开
+     */
+    private Integer isPublic;
+
+    /**
+     * 浏览量
+     */
+    private Integer viewCount;
+
+    /**
+     * 收藏数
+     */
+    private Integer favoriteCount;
+
+    /**
+     * 封面图片URL
+     */
+    private String cover;
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

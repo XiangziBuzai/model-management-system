@@ -4,6 +4,16 @@
       <template #header>
         <div class="card-header">
           <span>个人信息</span>
+          <el-button 
+            type="info" 
+            plain 
+            size="small" 
+            @click="showWelcomeGuide"
+            class="guide-btn"
+          >
+            <el-icon><QuestionFilled /></el-icon>
+            使用指南
+          </el-button>
         </div>
       </template>
 
@@ -72,15 +82,30 @@
               <div class="avatar-tip">支持JPG、PNG、GIF、WEBP格式，大小不超过5MB</div>
             </el-form-item>
 
+            <el-form-item label="收藏列表">
+              <div class="privacy-setting">
+                <el-switch
+                  v-model="profileForm.isPublicFavorite"
+                  :active-value="1"
+                  :inactive-value="0"
+                  active-text="公开"
+                  inactive-text="私密"
+                />
+                <div class="privacy-tip">设置为公开后，其他用户可以在您的个人主页查看您的收藏列表</div>
+              </div>
+            </el-form-item>
+
             <el-form-item label="注册时间">
               <el-input v-model="profileForm.createdAt" disabled />
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="handleUpdateProfile" :loading="updateLoading">
-                保存修改
-              </el-button>
-              <el-button @click="loadProfile">重置</el-button>
+              <div class="button-group">
+                <el-button type="primary" @click="handleUpdateProfile" :loading="updateLoading" style="flex: 1;">
+                  保存修改
+                </el-button>
+                <el-button @click="loadProfile" style="flex: 1;">重置</el-button>
+              </div>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -122,10 +147,14 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="handleChangePassword" :loading="passwordLoading">
-                修改密码
-              </el-button>
-              <el-button @click="resetPasswordForm">重置</el-button>
+              <div class="button-group">
+                <el-button type="primary" @click="handleChangePassword" :loading="passwordLoading" style="flex: 1;">
+                  修改密码
+                </el-button>
+                <el-button @click="resetPasswordForm" style="flex: 1;">
+                  重置
+                </el-button>
+              </div>
             </el-form-item>
           </el-form>
         </el-tab-pane>
@@ -135,13 +164,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, inject } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Upload } from '@element-plus/icons-vue'
-import { getUserProfile, updateUserProfile, changePassword, uploadAvatar } from '../api/user'
-import { useAuthStore } from '../stores/useAuthStore'
+import { Upload, QuestionFilled } from '@element-plus/icons-vue'
+import { getUserProfile, updateUserProfile, changePassword, uploadAvatar } from '../../api/user'
+import { useAuthStore } from '../../stores/useAuthStore'
 
 const authStore = useAuthStore()
+const showWelcomeGuide = inject('showWelcomeGuide')
 
 const activeTab = ref('basic')
 const profileFormRef = ref(null)
@@ -160,6 +190,7 @@ const profileForm = reactive({
   email: '',
   phone: '',
   avatar: '',
+  isPublicFavorite: 0,
   createdAt: ''
 })
 
@@ -222,6 +253,7 @@ async function loadProfile() {
       email: data.email || '',
       phone: data.phone || '',
       avatar: data.avatar || '',
+      isPublicFavorite: data.isPublicFavorite ?? 0,
       createdAt: data.createdAt ? new Date(data.createdAt).toLocaleString('zh-CN') : ''
     })
   } catch (error) {
@@ -243,7 +275,8 @@ async function handleUpdateProfile() {
         nickname: profileForm.nickname,
         email: profileForm.email,
         phone: profileForm.phone,
-        avatar: profileForm.avatar
+        avatar: profileForm.avatar,
+        isPublicFavorite: profileForm.isPublicFavorite
       })
 
       // 更新本地存储的用户信息
@@ -252,6 +285,7 @@ async function handleUpdateProfile() {
         authStore.userInfo.email = data.email
         authStore.userInfo.phone = data.phone
         authStore.userInfo.avatar = data.avatar
+        authStore.userInfo.isPublicFavorite = data.isPublicFavorite
         localStorage.setItem('userInfo', JSON.stringify(authStore.userInfo))
       }
 
@@ -345,7 +379,7 @@ function handleRemoveAvatar() {
     type: 'warning'
   }).then(() => {
     profileForm.avatar = ''
-    ElMessage.success('头像已删除，请点击“保存修改”按钮保存')
+    ElMessage.success('头像已删除，请点击"保存修改"按钮保存')
   }).catch(() => {
     // 用户取消
   })
@@ -367,8 +401,15 @@ onMounted(() => {
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 18px;
   font-weight: bold;
+}
+
+.guide-btn {
+  font-size: 13px;
 }
 
 .profile-tabs {
@@ -396,6 +437,27 @@ onMounted(() => {
   margin-top: 8px;
   font-size: 12px;
   color: #909399;
+}
+
+.privacy-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.privacy-tip {
+  font-size: 12px;
+  color: #909399;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.button-group .el-button {
+  flex: 1;
 }
 
 /* 响应式适配 */

@@ -39,3 +39,11 @@ export function uploadAvatar(file) {
     }
   })
 }
+
+// 获取指定用户公开信息
+export function getUserPublicProfile(userId) {
+  return request({
+    url: `/user/public/${userId}`,
+    method: 'get'
+  })
+}

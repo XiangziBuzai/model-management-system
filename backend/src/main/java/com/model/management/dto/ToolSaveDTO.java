@@ -19,5 +19,9 @@ public class ToolSaveDTO {
 
     private String remark;
 
+    private String cover;
+
     private Integer sold;
+
+    private Integer isPublic;
 }

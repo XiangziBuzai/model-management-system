@@ -31,4 +31,9 @@ public class UserProfileUpdateDTO {
      * 头像URL
      */
     private String avatar;
+
+    /**
+     * 是否公开收藏列表: 0-私密, 1-公开
+     */
+    private Integer isPublicFavorite;
 }
