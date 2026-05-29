@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final JwtInterceptor jwtInterceptor;
 
-    @Value("${file.upload.path:uploads/avatars}")
+    @Value("${file.upload.path:uploads}")
     private String uploadPath;
 
     @Override
