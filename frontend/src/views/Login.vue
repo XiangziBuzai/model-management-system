@@ -470,7 +470,7 @@ function goToRegister() {
 
 /* 输入框包装器 - 流光边框效果 */
 .input-wrapper {
-  width: 95%;
+  width: 100%;
   position: relative;
   border-radius: 12px;
   padding: 2px;

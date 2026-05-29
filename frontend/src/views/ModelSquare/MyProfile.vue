@@ -567,6 +567,12 @@ onUnmounted(() => {
   color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  min-width: 90px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .tab-bar :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {

@@ -350,7 +350,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels, batchSetModelsPublic, batchSetModelsPrivate, setAllModelsPublic, setAllModelsPrivate } from '../../api/model';
+import { getModelList, addModel, updateModel, deleteModel, batchDeleteModels, setAllModelsPublic, setAllModelsPrivate, uploadCover } from '../../api/model';
 import { useManufacturerStore } from '../../stores/useManufacturerStore'
 import { addManufacturer } from '../../api/manufacturer'
 import * as XLSX from 'xlsx'
@@ -481,31 +481,16 @@ function handleEdit(row) {
 async function handleCoverUpload(options) {
   const { file, onSuccess, onError } = options
   try {
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-    
-    const response = await fetch('/api/upload/cover', {
-      method: 'POST',
-      body: uploadData,
-      headers: getUploadHeaders()
-    })
-    
-    const result = await response.json()
-    if (result.code === 200) {
-      const coverUrl = result.data
-      console.log('上传成功，封面URL:', coverUrl)
-      formData.cover = coverUrl
-      setTimeout(() => {
-        onSuccess(coverUrl, file)
-      }, 0)
-      ElMessage.success('封面上传成功')
-    } else {
-      onError(new Error(result.message || '上传失败'))
-      ElMessage.error(result.message || '上传失败')
-    }
+    const coverUrl = await uploadCover(file)
+    console.log('上传成功，封面URL:', coverUrl)
+    formData.cover = coverUrl
+    setTimeout(() => {
+      onSuccess(coverUrl, file)
+    }, 0)
+    ElMessage.success('封面上传成功')
   } catch (error) {
     onError(error)
-    ElMessage.error('上传失败：' + error.message)
+    ElMessage.error('上传失败：' + (error.message || error))
   }
 }
 
@@ -527,15 +512,6 @@ function beforeCoverUpload(file) {
 // 移除封面
 function removeCover() {
   formData.cover = ''
-}
-
-// 获取上传请求头
-function getUploadHeaders() {
-  const token = localStorage.getItem('token')
-  if (token) {
-    return { 'Authorization': 'Bearer ' + token }
-  }
-  return {}
 }
 
 // 删除

@@ -76,3 +76,17 @@ export function setAllToolsPrivate() {
     method: 'put'
   })
 }
+
+// 上传封面
+export function uploadCover(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request({
+    url: '/upload/cover',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
