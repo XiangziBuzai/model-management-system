@@ -46,7 +46,7 @@ springdoc:
 
 # DeepSeek AI 配置
 deepseek:
-  api-key: ${DEEPSEEK_API_KEY:sk-80a012300608475993b036b91e3dacad}
+  api-key: ${DEEPSEEK_API_KEY}
   base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
   model: ${DEEPSEEK_MODEL:deepseek-v4-pro}
   temperature: ${DEEPSEEK_TEMPERATURE:0.7}
