@@ -82,7 +82,7 @@
       <el-input
         v-model="inputMessage"
         type="textarea"
-        :rows="2"
+        :autosize="{ minRows: 1, maxRows: 100 }"
         placeholder="请输入消息..."
         @keyup.enter.ctrl="sendMessage"
       />
@@ -922,6 +922,27 @@ onUnmounted(() => {
   padding: 12px 16px;
   resize: none;
   transition: all 0.3s ease;
+  box-sizing: border-box;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.input-area .el-textarea :deep(.el-textarea__inner)::-webkit-scrollbar {
+  width: 6px;
+}
+
+.input-area .el-textarea :deep(.el-textarea__inner)::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.input-area .el-textarea :deep(.el-textarea__inner)::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(64, 158, 255, 0.5), rgba(103, 194, 58, 0.5));
+  border-radius: 3px;
+}
+
+.input-area .el-textarea :deep(.el-textarea__inner)::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(64, 158, 255, 0.7), rgba(103, 194, 58, 0.7));
 }
 
 .input-area .el-textarea :deep(.el-textarea__inner:focus) {
@@ -935,6 +956,7 @@ onUnmounted(() => {
 }
 
 .input-area .el-button {
+  margin-bottom: 6px;
   background: linear-gradient(135deg, #409eff, #67c23a);
   border: none;
   border-radius: 16px;

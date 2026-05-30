@@ -145,12 +145,33 @@ const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   const now = new Date()
-  const diff = now - date
 
-  if (diff < 60000) return '刚刚'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-  return date.toLocaleDateString('zh-CN')
+  const diff = now - date
+  const oneMinute = 60000
+  const oneHour = 3600000
+  const oneDay = 86400000
+
+  if (diff < oneMinute) return '刚刚'
+  if (diff < oneHour) return `${Math.floor(diff / oneMinute)}分钟前`
+  if (diff < oneDay) return `${Math.floor(diff / oneHour)}小时前`
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today.getTime() - oneDay)
+  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+
+  if (targetDate.getTime() === yesterday.getTime()) {
+    return '昨天'
+  }
+
+  const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  if (targetDate.getTime() >= today.getTime() - today.getDay() * oneDay) {
+    return weekDays[targetDate.getDay()]
+  }
+
+  return date.toLocaleDateString('zh-CN', {
+    month: 'short',
+    day: 'numeric'
+  })
 }
 
 const loadMore = () => {

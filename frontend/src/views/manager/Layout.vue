@@ -6,7 +6,7 @@
         <div class="logo-icon">
           <el-icon :size="28"><Box /></el-icon>
         </div>
-        <h2>Model Share</h2>
+        <h2>ModelSphere</h2>
       </div>
       <el-menu
         :default-active="activeMenu"
@@ -101,6 +101,20 @@
         </div>
       </div>
     </el-container>
+    
+    <!-- AI 助手入口 -->
+    <div class="ai-assistant-entry" @click="showAiAssistant = true">
+      <el-icon :size="30"><ChatDotRound /></el-icon>
+    </div>
+    
+    <!-- AI 助手全屏覆盖层 -->
+    <Teleport to="body">
+      <div v-if="showAiAssistant" class="ai-fullscreen-overlay" @click.self="showAiAssistant = false">
+        <div class="ai-fullscreen-container">
+          <AiChatAssistant @close="showAiAssistant = false" />
+        </div>
+      </div>
+    </Teleport>
   </el-container>
 </template>
 
@@ -119,15 +133,19 @@ import {
   User,
   SwitchButton,
   View,
-  Shop
+  Shop,
+  ChatDotRound
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../../stores/useAuthStore'
+import AiChatAssistant from '../../components/AiChatAssistant.vue'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
 const activeMenu = computed(() => route.path)
+const showAiAssistant = ref(false)
+const isMobile = ref(false)
 
 // 导航菜单配置
 const navItems = [
@@ -169,6 +187,12 @@ function formatTime() {
 onMounted(() => {
   formatTime()
   timeInterval = setInterval(formatTime, 1000)
+  
+  // 检测是否为移动端
+  isMobile.value = window.innerWidth <= 768
+  window.addEventListener('resize', () => {
+    isMobile.value = window.innerWidth <= 768
+  })
 })
 
 // 清理定时器
@@ -593,6 +617,100 @@ function handleTabClick(path) {
   .current-time {
     font-size: 11px;
     padding: 4px 8px;
+  }
+}
+
+/* AI 助手入口按钮 */
+.ai-assistant-entry {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 999;
+  animation: float 3s ease-in-out infinite;
+}
+
+.ai-assistant-entry:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* AI 助手全屏覆盖层样式 */
+.ai-fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ai-fullscreen-container {
+  width: 95%;
+  max-width: 1100px;
+  height: 85vh;
+  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-fullscreen-container {
+    width: 100%;
+    height: 100vh;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-assistant-entry {
+    bottom: 70px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .ai-assistant-entry .el-icon {
+    font-size: 24px;
   }
 }
 </style>

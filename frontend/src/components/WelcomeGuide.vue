@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="欢迎使用Model Share"
+    title="欢迎使用ModelSphere"
     :width="dialogWidth"
     :close-on-click-modal="false"
     :show-close="true"
@@ -24,7 +24,7 @@
               <div class="feature-item">
                 <el-icon :size="20" color="#409EFF"><Box /></el-icon>
                 <div class="feature-text">
-                  <strong>Model Share</strong>
+                  <strong>ModelSphere</strong>
                   <p>管理和展示各类AI模型，支持模型的增删改查操作</p>
                 </div>
               </div>

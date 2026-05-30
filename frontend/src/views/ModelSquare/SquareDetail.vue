@@ -6,8 +6,12 @@
         <div v-if="item.cover" class="item-cover">
           <img :src="item.cover" :alt="item.name" @error="handleCoverError" />
         </div>
-        <h1 class="item-name">{{ item.name }}</h1>
+        <div class="item-info-content">
+          <h1 class="item-name">{{ item.name }}</h1>
+          <el-tag v-if="item.manufacturerName" type="primary" size="large">{{ item.manufacturerName }}</el-tag>
+        </div>
         <div class="item-price">¥{{ item.price }}</div>
+        <div class="item-remark-label">备注</div>
         <p class="item-remark" v-html="formatRemark(item.remark)"></p>
         <div class="item-meta">
           <span class="item-user" @click="goToUserProfile">
@@ -184,7 +188,6 @@ import RichEditor from '../../components/RichEditor.vue'
 
 const route = useRoute()
 const router = useRouter()
-const authStore = useAuthStore()
 const manufacturerStore = useManufacturerStore()
 const loading = ref(false)
 const item = ref(null)
@@ -649,6 +652,12 @@ onMounted(() => {
   animation: glowPulse 2s infinite;
 }
 
+.item-info-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .item-price {
   font-size: 38px;
   font-weight: 900;
@@ -660,6 +669,12 @@ onMounted(() => {
   filter: drop-shadow(0 4px 8px rgba(245, 108, 108, 0.4));
   animation: shimmer 3s infinite;
   background-size: 200% auto;
+}
+
+.item-remark-label {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
 }
 
 .item-remark {

@@ -92,7 +92,6 @@
 
             <el-form-item>
               <div class="entry-selection">
-                <span>登录后进入：</span>
                 <el-radio-group v-model="entryType" size="small">
                   <el-radio label="square">模型广场</el-radio>
                   <el-radio label="admin">个人管理后台</el-radio>
@@ -591,13 +590,13 @@ function goToRegister() {
 
 .login-footer {
   text-align: center;
-  margin-top: 24px;
   font-size: 14px;
   color: #606266;
   animation: fade-in-up 0.8s ease-out 0.6s both;
 }
 
 .entry-selection {
+  margin-left: 20px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -659,7 +658,7 @@ function goToRegister() {
 /* 平板端适配 */
 @media (max-width: 1024px) {
   .login-wrapper {
-    margin: 20px;
+    margin: 10px 100px;
     flex-direction: column;
     max-width: 600px;
     min-height: auto;
@@ -667,15 +666,17 @@ function goToRegister() {
 
   .brand-section {
     padding: 30px 30px;
-    min-height: 300px;
+    min-height: 180px;
   }
 
   .brand-title {
     font-size: 32px;
+    margin-bottom: 10px;
   }
 
   .brand-slogan {
     font-size: 16px;
+    margin-bottom: 10px;
   }
 
   .brand-features {
@@ -690,7 +691,7 @@ function goToRegister() {
   }
 
   .form-section {
-    padding: 40px 30px;
+    padding: 20px;
   }
 }
 
@@ -701,13 +702,13 @@ function goToRegister() {
   }
 
   .login-wrapper {
-    margin: 20px;
+    margin: 0 50px;
     border-radius: 20px;
   }
 
   .brand-section {
-    padding: 30px 20px;
-    min-height: 250px;
+    padding: 20px;
+    min-height: 180px;
   }
 
   .brand-icon-wrapper {
@@ -732,7 +733,7 @@ function goToRegister() {
   }
 
   .form-section {
-    padding: 30px 20px;
+    padding: 20px;
   }
 
   .login-header h2 {
@@ -754,7 +755,7 @@ function goToRegister() {
 @media (max-width: 480px) {
   .brand-section {
     padding: 24px 16px;
-    min-height: 200px;
+    min-height: 170px;
   }
 
   .brand-title {

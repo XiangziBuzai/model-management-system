@@ -728,7 +728,7 @@ function goToLogin() {
   }
 
   .brand-section {
-    padding: 0;
+    padding: 20px;
     min-height: 180px;
   }
 
@@ -772,7 +772,7 @@ function goToLogin() {
 
   .register-wrapper {
     border-radius: 20px;
-    margin: 60px 12px;
+    margin: 0 50px;
   }
 
   .brand-section {
@@ -790,7 +790,7 @@ function goToLogin() {
 
   .brand-slogan {
     font-size: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
 
   .brand-features {

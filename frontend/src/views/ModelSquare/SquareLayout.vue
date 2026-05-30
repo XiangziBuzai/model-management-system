@@ -112,11 +112,25 @@
         <span>我</span>
       </router-link>
     </div>
+    
+    <!-- AI 助手入口 -->
+    <div class="ai-assistant-entry" @click="showAiAssistant = true">
+      <el-icon :size="28"><Service /></el-icon>
+    </div>
+    
+    <!-- AI 助手全屏覆盖层 -->
+    <Teleport to="body">
+      <div v-if="showAiAssistant" class="ai-fullscreen-overlay" @click.self="showAiAssistant = false">
+        <div class="ai-fullscreen-container">
+          <AiChatAssistant @close="showAiAssistant = false" />
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   HomeFilled,
@@ -126,11 +140,13 @@ import {
   User,
   UserFilled,
   Setting,
-  SwitchButton
+  SwitchButton,
+  Service
 } from '@element-plus/icons-vue'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useMessageStore } from '../../stores/useMessageStore'
 import { useSquareStore } from '../../stores/useSquareStore'
+import AiChatAssistant from '../../components/AiChatAssistant.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -141,6 +157,9 @@ const squareStore = useSquareStore()
 const pageTitle = computed(() => {
   return route.meta.title || '模型广场'
 })
+
+const showAiAssistant = ref(false)
+const isMobile = ref(false)
 
 const userInfo = computed(() => authStore.userInfo || {})
 const userAvatar = computed(() => userInfo.value.avatar || '')
@@ -154,6 +173,12 @@ let unreadTimer = null
 onMounted(() => {
   messageStore.fetchUnreadCount()
   unreadTimer = setInterval(() => messageStore.fetchUnreadCount(), 30000)
+  
+  // 检测是否为移动端
+  isMobile.value = window.innerWidth <= 768
+  window.addEventListener('resize', () => {
+    isMobile.value = window.innerWidth <= 768
+  })
 })
 
 onUnmounted(() => {
@@ -215,11 +240,6 @@ watch(() => route.path, (newPath, oldPath) => {
     radial-gradient(ellipse at 40% 50%, rgba(66, 129, 255, 0.1) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
-}
-
-.square-layout > * {
-  position: relative;
-  z-index: 1;
 }
 
 @keyframes gradientShift {
@@ -558,13 +578,94 @@ watch(() => route.path, (newPath, oldPath) => {
 }
 
 .nav-item .el-badge :deep(.el-badge__content) {
-  font-size: 9px;
-  min-width: 14px;
-  height: 14px;
-  line-height: 14px;
-  padding: 0 3px;
-  background: linear-gradient(135deg, #f56c6c, #ff9a9e);
-  box-shadow: 0 2px 8px rgba(245, 108, 108, 0.5);
+    font-size: 9px;
+    min-width: 14px;
+    height: 14px;
+    line-height: 14px;
+    padding: 0 3px;
+    background: linear-gradient(135deg, #f56c6c, #ff9a9e);
+    box-shadow: 0 2px 8px rgba(245, 108, 108, 0.5);
+  }
+
+/* AI 助手入口按钮 */
+.ai-assistant-entry {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 999;
+  animation: float 3s ease-in-out infinite;
+}
+
+.ai-assistant-entry:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* AI 助手全屏覆盖层样式 */
+.ai-fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ai-fullscreen-container {
+  width: 95%;
+  max-width: 1100px;
+  height: 85vh;
+  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-fullscreen-container {
+    width: 100%;
+    height: 100vh;
+    max-width: none;
+  }
 }
 
 @media (min-width: 769px) {

@@ -461,6 +461,7 @@ watch(list, () => {
   border: none;
   border-radius: 25px;
   padding: 12px 28px;
+  margin-top: 8px;
   font-weight: 600;
   box-shadow: 0 4px 15px rgba(64, 158, 255, 0.4);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -552,7 +553,7 @@ watch(list, () => {
 
 @media (min-width: 769px) {
   .content-list {
-    height: calc(100vh - 140px);
+    height: calc(100vh - 170px);
   }
 }
 
@@ -828,23 +829,57 @@ watch(list, () => {
 
 @media (max-width: 768px) {
   .search-bar {
-    padding: 14px;
-    flex-direction: column;
-    gap: 12px;
+    /* padding: 12px; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .search-bar .el-input :deep(.el-input__wrapper) {
+    padding: 2px 12px;
+    font-size: 13px;
+  }
+
+  .search-bar .el-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    margin-top: 2px;
   }
 
   .content-list {
-    padding: 14px;
+    padding: 12px;
   }
 
   .tab-bar {
-    gap: 12px;
-    padding: 12px 14px;
+    gap: 10px;
+    padding: 10px 12px;
+    /* flex-direction: column;
+    align-items: flex-start; */
+  }
+
+  .tab-bar :deep(.el-radio-button__inner) {
+    font-size: 12px;
+    padding: 6px 14px;
+  }
+
+  .sort-bar {
+    gap: 8px;
+  }
+
+  .sort-label {
+    font-size: 12px;
+  }
+
+  .sort-bar :deep(.el-radio-button__inner) {
+    font-size: 11px;
+    padding: 4px 12px;
   }
 
   .card-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
   }
 
   .cover-wrapper {
@@ -852,27 +887,27 @@ watch(list, () => {
   }
 
   .cover-icon {
-    font-size: 40px;
+    font-size: 36px;
   }
 
   .item-info {
-    padding: 14px;
+    padding: 12px;
   }
 
   .item-name {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .item-price {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .manufacturer {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .seller {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 

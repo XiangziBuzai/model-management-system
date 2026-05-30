@@ -110,10 +110,13 @@
                 <h3 class="item-name">{{ item.name }}</h3>
                 <span class="item-price">¥{{ item.price }}</span>
                 <div class="item-meta">
-                  <span class="manufacturer">{{ item.manufacturerName || '' }}</span>
+                  <!-- <span class="manufacturer">{{ item.manufacturerName || '' }}</span> -->
                   <span class="seller-status">
                     <el-tag type="warning" size="small">
                       公开
+                    </el-tag>
+                    <el-tag :type="item.sold === 1 ? 'success' : 'info'" size="small">
+                      {{ item.sold === 1 ? '已售出' : '未售出' }}
                     </el-tag>
                   </span>
                 </div>
@@ -735,7 +738,6 @@ onUnmounted(() => {
   font-size: 16px;
   font-weight: 700;
   color: #fff;
-  margin: 0 0 10px 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -753,7 +755,7 @@ onUnmounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 12px;
+  margin: 5px 0;
 }
 
 .item-meta {
@@ -801,11 +803,15 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .profile-header {
-    padding: 20px;
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .profile-info {
-    gap: 14px;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 5px;
   }
 
   .avatar {
@@ -814,34 +820,66 @@ onUnmounted(() => {
     font-size: 20px;
   }
 
+  .user-details {
+    width: 100%;
+  }
+
   .nickname {
-    font-size: 20px;
+    font-size: 18px;
+  }
+
+  .username {
+    font-size: 12px;
+  }
+
+  .guide-btn {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
   }
 
   .profile-stats {
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
   }
 
   .stat-item {
-    padding: 8px 14px;
-    border-radius: 12px;
+    padding: 1px 12px;
+    border-radius: 10px;
+    min-width: 70px;
   }
 
   .stat-value {
-    font-size: 22px;
+    font-size: 14px;
   }
 
   .stat-label {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .tab-bar {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tab-bar :deep(.el-radio-button__inner) {
+    font-size: 12px;
+    padding: 6px 14px;
+    min-width: 75px;
   }
 
   .content-list {
-    padding: 14px;
+    padding: 12px;
   }
 
   .card-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
   }
 
   .cover-wrapper {
@@ -849,19 +887,19 @@ onUnmounted(() => {
   }
 
   .cover-icon {
-    font-size: 40px;
+    font-size: 36px;
   }
 
   .item-info {
-    padding: 14px;
+    padding: 8px;
   }
 
   .item-name {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .item-price {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 </style>
