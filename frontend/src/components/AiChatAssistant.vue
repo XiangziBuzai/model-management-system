@@ -113,10 +113,16 @@
                 <el-icon :size="24"><Service /></el-icon>
               </div>
               <div class="message-content">
-                <div class="loading-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+                <div class="loading-wrapper">
+                  <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <div class="thinking-text">
+                    <span class="thinking-label">正在思考</span>
+                    <span class="thinking-timer">{{ thinkingTime }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -180,6 +186,8 @@ const sidebarOpen = ref(false)
 const tempSessionId = ref(null)
 const textareaRef = ref(null)
 const textareaOverflow = ref(false)
+const thinkingTime = ref('0.0s')
+let thinkingTimer = null
 
 const presetQuestions = [
   { text: '入门级模型推荐', prompt: '推荐一些适合新手的入门级拼装模型？' },
@@ -296,6 +304,14 @@ const handleSendMessage = async () => {
   inputMessage.value = ''
   loading.value = true
   
+  // 启动思考计时器
+  thinkingTime.value = '0.0s'
+  const startTime = Date.now()
+  thinkingTimer = setInterval(() => {
+    const elapsed = (Date.now() - startTime) / 1000
+    thinkingTime.value = elapsed.toFixed(1) + 's'
+  }, 100)
+  
   // 如果是临时会话（还没创建的），先创建
   if (!currentSessionId.value) {
     try {
@@ -305,6 +321,7 @@ const handleSendMessage = async () => {
     } catch (error) {
       ElMessage.error('创建会话失败')
       loading.value = false
+      clearInterval(thinkingTimer)
       return
     }
   }
@@ -336,6 +353,7 @@ const handleSendMessage = async () => {
     })
   } finally {
     loading.value = false
+    clearInterval(thinkingTimer)
   }
 }
 
@@ -1071,6 +1089,46 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px 16px 16px 4px;
+}
+
+.loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.thinking-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.thinking-label {
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  animation: textPulse 1.5s ease-in-out infinite;
+}
+
+.thinking-timer {
+  font-family: 'Courier New', monospace;
+  color: rgba(168, 85, 247, 0.8);
+  font-size: 11px;
+  min-width: 35px;
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .loading-dots span {

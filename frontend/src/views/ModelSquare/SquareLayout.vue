@@ -113,8 +113,8 @@
       </router-link>
     </div>
     
-    <!-- AI 助手入口 -->
-    <div class="ai-assistant-entry" @click="showAiAssistant = true">
+    <!-- AI 助手入口（聊天页面不显示） -->
+    <div v-if="!isChatPage" class="ai-assistant-entry" @click="showAiAssistant = true">
       <el-icon :size="28"><Service /></el-icon>
     </div>
     
@@ -167,6 +167,9 @@ const userName = computed(() => userInfo.value.username || userInfo.value.realNa
 const nickname = computed(() => userInfo.value.nickname || userInfo.value.realName || '用户')
 
 const unreadCount = computed(() => messageStore.unreadCount)
+
+// 判断当前是否在聊天页面
+const isChatPage = computed(() => route.name === 'Chat')
 
 let unreadTimer = null
 
