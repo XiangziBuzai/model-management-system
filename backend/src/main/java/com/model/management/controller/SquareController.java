@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 模型广场控制器
  */
@@ -52,9 +54,10 @@ public class SquareController {
             @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false, defaultValue = "newest") String sortBy) {
-        log.info("查询公开模型列表, 页码: {}, 每页数量: {}, 关键词: {}, 排序: {}", pageNum, pageSize, keyword, sortBy);
-        return Result.success(modelService.getPublicModels(pageNum, pageSize, keyword, sortBy));
+            @RequestParam(required = false, defaultValue = "newest") String sortBy,
+            @RequestParam(required = false) List<Long> manufacturerIds) {
+        log.info("查询公开模型列表, 页码: {}, 每页数量: {}, 关键词: {}, 排序: {}, 厂家ID列表: {}", pageNum, pageSize, keyword, sortBy, manufacturerIds);
+        return Result.success(modelService.getPublicModels(pageNum, pageSize, keyword, sortBy, manufacturerIds));
     }
 
     @Operation(summary = "获取公开工具列表")

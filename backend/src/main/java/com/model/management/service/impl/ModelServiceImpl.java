@@ -165,9 +165,9 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy) {
+    public PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy, List<Long> manufacturerIds) {
         Page<ModelVO> page = new Page<>(pageNum, pageSize);
-        modelMapper.selectPublicModelVOPage(page, keyword, sortBy);
+        modelMapper.selectPublicModelVOPage(page, keyword, sortBy, manufacturerIds);
         return PageResult.of(page);
     }
 

@@ -21,8 +21,9 @@ public interface ModelMapper extends BaseMapper<Model> {
     
     /**
      * 查询公开模型列表（广场使用）
+     * @param manufacturerIds 厂家ID列表（可选）
      */
-    IPage<ModelVO> selectPublicModelVOPage(Page<ModelVO> page, @Param("keyword") String keyword, @Param("sortBy") String sortBy);
+    IPage<ModelVO> selectPublicModelVOPage(Page<ModelVO> page, @Param("keyword") String keyword, @Param("sortBy") String sortBy, @Param("manufacturerIds") List<Long> manufacturerIds);
     
     /**
      * 查询公开模型详情（广场使用）

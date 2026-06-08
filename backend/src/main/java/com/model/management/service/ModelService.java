@@ -28,8 +28,9 @@ public interface ModelService {
     /**
      * 分页查询公开模型列表（广场使用）
      * @param sortBy 排序方式：newest-最新（默认），hot-最热
+     * @param manufacturerIds 厂家ID列表（可选）
      */
-    PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy);
+    PageResult<ModelVO> getPublicModels(int pageNum, int pageSize, String keyword, String sortBy, List<Long> manufacturerIds);
     
     /**
      * 获取公开模型详情（广场使用）

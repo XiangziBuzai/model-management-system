@@ -121,6 +121,12 @@
             AND (m.name LIKE CONCAT('%', #{keyword}, '%')
                  OR m.remark LIKE CONCAT('%', #{keyword}, '%'))
         </if>
+        <if test="manufacturerIds != null and manufacturerIds.size() > 0">
+            AND m.manufacturer_id IN
+            <foreach collection="manufacturerIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
         <choose>
             <when test="sortBy != null and sortBy == 'hot'">
                 ORDER BY m.view_count DESC

@@ -19,6 +19,20 @@
         <el-radio-button label="tools">工具</el-radio-button>
       </el-radio-group>
       
+      <!-- 厂家分类 -->
+      <div v-if="activeTab === 'models'" class="manufacturer-filter">
+        <el-button
+          type="default"
+          size="small"
+          @click="openManufacturerDialog"
+          class="manufacturer-btn"
+        >
+          <el-icon class="tags-icon"><Filter /></el-icon>
+          厂家分类
+          <span v-if="selectedManufacturers.length > 0" class="selected-count">({{ selectedManufacturers.length }})</span>
+        </el-button>
+      </div>
+      
       <!-- 排序选项 -->
       <div class="sort-bar">
         <span class="sort-label">排序：</span>
@@ -28,6 +42,40 @@
         </el-radio-group>
       </div>
     </div>
+
+    <!-- 厂家分类选择弹窗 -->
+    <el-dialog
+      v-model="showManufacturerDialog"
+      title="选择厂家"
+      width="400px"
+      :close-on-click-modal="true"
+      @close="handleDialogClose"
+    >
+      <div v-if="manufacturersLoading" class="dialog-loading">
+        <el-loading text="加载中..." />
+      </div>
+      <div v-else-if="manufacturers.length === 0" class="dialog-empty">
+        <el-empty description="暂无厂家数据" />
+      </div>
+      <div v-else class="dialog-tags-container">
+        <el-tag
+          v-for="manufacturer in manufacturers"
+          :key="manufacturer.id"
+          :class="{ active: selectedManufacturers.includes(manufacturer.id) }"
+          @click="toggleManufacturer(manufacturer.id)"
+          :closable="selectedManufacturers.includes(manufacturer.id)"
+          @close.stop="removeManufacturer(manufacturer.id)"
+        >
+          {{ manufacturer.name }}
+        </el-tag>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="clearManufacturer">清除全部</el-button>
+          <el-button type="primary" @click="confirmManufacturer">确定</el-button>
+        </div>
+      </template>
+    </el-dialog>
 
     <!-- 列表内容 -->
     <div class="content-list" v-loading="loading" ref="contentListRef" @scroll="handleScroll">
@@ -79,7 +127,8 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getPublicModels, getPublicTools } from '../../api/square'
-import { View, Star, Picture, User } from '@element-plus/icons-vue'
+import { getManufacturerList } from '../../api/manufacturer'
+import { View, Star, Picture, User, Filter } from '@element-plus/icons-vue'
 import { useSquareStore } from '../../stores/useSquareStore'
 
 const router = useRouter()
@@ -94,6 +143,12 @@ const pageSize = ref(10)
 const hasMore = ref(true)
 const contentListRef = ref(null)
 let scrollTimer = null
+
+// 厂家分类相关
+const manufacturers = ref([])
+const selectedManufacturers = ref([])
+const showManufacturerDialog = ref(false)
+const manufacturersLoading = ref(false)
 
 // 加载数据
 const loadData = async (reset = false) => {
@@ -111,7 +166,8 @@ const loadData = async (reset = false) => {
       pageNum: pageNum.value,
       pageSize: pageSize.value,
       keyword: keyword.value || undefined,
-      sortBy: sortBy.value
+      sortBy: sortBy.value,
+      manufacturerIds: selectedManufacturers.value?.length > 0 ? selectedManufacturers.value : undefined
     }
 
     let res
@@ -156,7 +212,8 @@ const loadToSavedPage = async (targetPage) => {
       pageNum: i,
       pageSize: pageSize.value,
       keyword: keyword.value || undefined,
-      sortBy: sortBy.value
+      sortBy: sortBy.value,
+      manufacturerIds: selectedManufacturers.value?.length > 0 ? selectedManufacturers.value : undefined
     }
     requests.push(
       activeTab.value === 'models' ? getPublicModels(params) : getPublicTools(params)
@@ -196,6 +253,60 @@ const handleSortChange = () => {
   loadData(true)
 }
 
+// 切换厂家选中状态（不请求）
+const toggleManufacturer = (manufacturerId) => {
+  const index = selectedManufacturers.value.indexOf(manufacturerId)
+  if (index !== -1) {
+    selectedManufacturers.value.splice(index, 1)
+  } else {
+    selectedManufacturers.value.push(manufacturerId)
+  }
+}
+
+// 移除单个厂家（不请求）
+const removeManufacturer = (manufacturerId) => {
+  const index = selectedManufacturers.value.indexOf(manufacturerId)
+  if (index !== -1) {
+    selectedManufacturers.value.splice(index, 1)
+  }
+}
+
+// 清除厂家筛选（不请求）
+const clearManufacturer = () => {
+  selectedManufacturers.value = []
+}
+
+// 确认厂家选择
+const confirmManufacturer = () => {
+  showManufacturerDialog.value = false
+  loadData(true)
+}
+
+// 打开厂家选择弹窗
+const openManufacturerDialog = async () => {
+  if (manufacturers.value.length === 0 && !manufacturersLoading.value) {
+    manufacturersLoading.value = true
+    await loadManufacturers()
+    manufacturersLoading.value = false
+  }
+  showManufacturerDialog.value = true
+}
+
+// 关闭弹窗
+const handleDialogClose = () => {
+  showManufacturerDialog.value = false
+}
+
+// 加载厂家列表
+const loadManufacturers = async () => {
+  try {
+    const res = await getManufacturerList()
+    manufacturers.value = res.data || res
+  } catch (error) {
+    console.error('加载厂家列表失败:', error)
+  }
+}
+
 // 加载更多
 const loadMore = () => {
   loadData(false)
@@ -217,7 +328,7 @@ const handleScroll = (e) => {
 // 跳转到详情页
 const goToDetail = (item) => {
   const scrollTop = contentListRef.value?.scrollTop || 0
-  squareStore.saveListState(activeTab.value, sortBy.value, keyword.value, pageNum.value, pageSize.value, scrollTop)
+  squareStore.saveListState(activeTab.value, sortBy.value, keyword.value, pageNum.value, pageSize.value, scrollTop, selectedManufacturers.value)
   const type = activeTab.value === 'models' ? 'model' : 'tool'
   router.push(`/square/detail/${type}/${item.id}`)
 }
@@ -278,6 +389,7 @@ onMounted(() => {
     pageNum.value = savedState.pageNum
     pageSize.value = savedState.pageSize
     pendingScrollTop = savedState.scrollTop || 0
+    selectedManufacturers.value = Array.isArray(savedState.selectedManufacturers) ? savedState.selectedManufacturers : []
     
     const restoreScroll = () => {
       if (contentListRef.value && pendingScrollTop > 0) {
@@ -286,6 +398,9 @@ onMounted(() => {
     }
     
     const loadAndRestore = async () => {
+      if (activeTab.value === 'models') {
+        await loadManufacturers()
+      }
       if (pageNum.value > 1) {
         await loadToSavedPage(pageNum.value - 1)
       } else {
@@ -307,6 +422,8 @@ onMounted(() => {
     keyword.value = ''
     pageNum.value = 1
     pageSize.value = 10
+    selectedManufacturers.value = []
+    loadManufacturers()
     loadData(true)
   }
 })
@@ -314,7 +431,18 @@ onMounted(() => {
 onUnmounted(() => {
 })
 
-watch(activeTab, () => {
+watch(activeTab, (newTab) => {
+  if (newTab === 'models') {
+    loadManufacturers()
+    // 从store恢复之前选中的厂家（如果有的话）
+    if (squareStore.selectedManufacturers !== undefined && Array.isArray(squareStore.selectedManufacturers)) {
+      selectedManufacturers.value = squareStore.selectedManufacturers
+    } else {
+      selectedManufacturers.value = []
+    }
+  } else {
+    selectedManufacturers.value = []
+  }
 })
 
 watch(sortBy, () => {
@@ -498,6 +626,42 @@ watch(list, () => {
   box-shadow: 0 0 20px rgba(64, 158, 255, 0.4);
 }
 
+.manufacturer-filter {
+  display: flex;
+  align-items: center;
+}
+
+.manufacturer-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+}
+
+.manufacturer-btn:hover {
+  background: rgba(64, 158, 255, 0.2);
+  border-color: rgba(64, 158, 255, 0.5);
+  color: #fff;
+}
+
+.selected-count {
+  background: rgba(192, 223, 255, 0.5);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+  :deep(.el-tag__close) {
+    color: #ffffff !important;
+    margin-left: 8px;
+  }
+
 .sort-bar {
   display: flex;
   align-items: center;
@@ -525,6 +689,73 @@ watch(list, () => {
   border-color: rgba(103, 194, 58, 0.5);
   color: #fff;
   box-shadow: 0 0 15px rgba(103, 194, 58, 0.4);
+}
+
+/* 弹窗内厂家标签样式 */
+.dialog-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.dialog-tags-container :deep(.el-tag) {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  color: #333;
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.dialog-tags-container :deep(.el-tag:hover) {
+  background: #fff;
+  border-color: #409eff;
+  color: #409eff;
+  transform: scale(1.05);
+}
+
+.dialog-tags-container :deep(.el-tag.active) {
+  background: #409eff;
+  border-color: #409eff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.dialog-tags-container :deep(.el-tag__close) {
+  color: #999;
+  margin-left: 8px;
+}
+
+.dialog-tags-container :deep(.el-tag__close:hover) {
+  color: #409eff;
+  background: rgba(64, 158, 255, 0.2);
+}
+
+.dialog-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+.dialog-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 150px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .content-list {

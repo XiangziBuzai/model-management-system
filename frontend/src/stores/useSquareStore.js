@@ -11,14 +11,16 @@ export const useSquareStore = defineStore('square', () => {
   const pageSize = ref(10)
   const scrollTop = ref(0)
   const isFromDetail = ref(false)
+  const selectedManufacturers = ref([])
 
-  function saveListState(tab, sort, kw, page, size, scroll) {
+  function saveListState(tab, sort, kw, page, size, scroll, manufacturers) {
     activeTab.value = tab
     sortBy.value = sort
     keyword.value = kw
     pageNum.value = page
     pageSize.value = size
     scrollTop.value = scroll
+    selectedManufacturers.value = manufacturers
     isFromDetail.value = true
     
     const state = {
@@ -28,6 +30,7 @@ export const useSquareStore = defineStore('square', () => {
       pageNum: page,
       pageSize: size,
       scrollTop: scroll,
+      selectedManufacturers: manufacturers,
       isFromDetail: true
     }
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -40,7 +43,8 @@ export const useSquareStore = defineStore('square', () => {
       keyword: keyword.value,
       pageNum: pageNum.value,
       pageSize: pageSize.value,
-      scrollTop: scrollTop.value
+      scrollTop: scrollTop.value,
+      selectedManufacturers: selectedManufacturers.value
     }
     isFromDetail.value = false
     sessionStorage.removeItem(STORAGE_KEY)
@@ -54,6 +58,7 @@ export const useSquareStore = defineStore('square', () => {
     pageNum.value = 1
     pageSize.value = 10
     scrollTop.value = 0
+    selectedManufacturers.value = []
     isFromDetail.value = false
     sessionStorage.removeItem(STORAGE_KEY)
   }
@@ -70,6 +75,7 @@ export const useSquareStore = defineStore('square', () => {
           pageNum.value = state.pageNum
           pageSize.value = state.pageSize
           scrollTop.value = state.scrollTop || 0
+          selectedManufacturers.value = Array.isArray(state.selectedManufacturers) ? state.selectedManufacturers : []
           isFromDetail.value = true
         } catch (e) {
           console.error('Failed to parse saved state:', e)
@@ -87,6 +93,7 @@ export const useSquareStore = defineStore('square', () => {
     pageNum,
     pageSize,
     isFromDetail,
+    selectedManufacturers,
     saveListState,
     restoreListState,
     resetListState,
